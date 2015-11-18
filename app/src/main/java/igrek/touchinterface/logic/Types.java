@@ -6,6 +6,7 @@ public class Types {
     }
 
     public class Align {
+        public static final int DEFAULT = 0x000;
         //  Pozycja
         public static final int LEFT = 0x001;
         public static final int RIGHT = 0x002;
@@ -13,7 +14,7 @@ public class Types {
         public static final int TOP = 0x010;
         public static final int BOTTOM = 0x020;
         public static final int VCENTER = 0x040;
-        //mieszane
+        // mieszane
         public static final int CENTER = HCENTER | VCENTER;
         public static final int BOTTOM_LEFT = BOTTOM | LEFT;
         public static final int BOTTOM_RIGHT = BOTTOM | RIGHT;

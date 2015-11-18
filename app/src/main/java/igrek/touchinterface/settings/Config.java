@@ -59,20 +59,6 @@ public class Config {
     }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
-    //  INTERNET
-    public class Connection {
-        public static final int max_response_size = 1024;
-        public static final int read_timeout = 10000; //[ms]
-        public static final int connect_timeout = 15000; //[ms]
-        public static final int success_code = 200;
-    }
-    //  LOKALIZACJA
-    public class Location {
-        public static final int min_updates_time = 5000; //[ms] częstotliwość aktualizacji położenia w module GPS
-        public static final int min_updates_distance = 0; //[m]
-        public static final int position_update_period = 10000; //[ms] - częstotliwość wysyłania do serwera
-        public static final int expired_time = 15000; //[ms] minimalny czas braku aktywności lokalizatora, aby uznać, że jest nieaktywny
-    }
     //  KLAWIATURA EKRANOWA
     public static final int keyboard_min_height = 100; //px
     //  KOMPAS

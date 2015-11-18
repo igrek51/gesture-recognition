@@ -33,10 +33,4 @@ public class App {
     //rozmiar ekranu
     public int w = 0;
     public int h = 0;
-    //  LOGOWANIE
-    public int id_user = 0;
-    public String login;
-    public String pass;
-    //  GPS
-    public long last_position_update = 0;
 }
