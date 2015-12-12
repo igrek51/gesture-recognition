@@ -3,6 +3,7 @@ package igrek.touchinterface.logic;
 import android.app.Activity;
 import android.content.Intent;
 
+import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.graphics.Buttons.*;
 import igrek.touchinterface.managers.*;
@@ -19,9 +20,10 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public Buttons buttons;
     TouchPanel touchpanel = null;
     Control control = null;
-    public Sensors sensors;
     public Preferences preferences;
     public InputManager inputmanager = null;
+
+    public Track gest1;
 
     public Engine(Activity activity) {
         this.activity = activity;
@@ -31,12 +33,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         graphics = new Graphics(activity, this);
         buttons = new Buttons();
         timer = new TimerManager(this, Config.timer_interval0);
-        try {
-            sensors = new Sensors(activity);
-        } catch (Exception e) {
-            sensors = null;
-            Output.error(e);
-        }
+activity.setContentView(graphics);
         //files = new Files(activity);
         Output.log("Utworzenie aplikacji.");
     }
@@ -48,22 +45,29 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         control = new Control(this);
         inputmanager = new InputManager(activity, graphics);
         //przyciski
-        Buttons.Button b;
-        b = buttons.add("Czyść konsolę", "clear", graphics.w / 2, 0, graphics.w / 2, 0, new ButtonActionListener() {
-            public void clicked() throws Exception {
-                Output.echos = "";
-            }
-        });
-        b = buttons.add("Minimalizuj", "minimize", 0, b.y + b.h, graphics.w / 2, 0, new ButtonActionListener() {
+		//TODO: rozmiary buttonów w module grafiki
+        buttons.add("Minimalizuj", "minimize", 0, 0, graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
                 minimize();
             }
         });
-        buttons.add("Zakończ", "exit", graphics.w / 2, b.y + b.h, graphics.w / 2, 0, new ButtonActionListener() {
+        buttons.add("Zakończ", "exit", graphics.w / 2, 0, graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
                 control.executeEvent(Types.ControlEvent.BACK);
             }
         });
+        buttons.add("Czyść konsolę", "clear", 0, buttons.lastYBottom(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+                Output.reset();
+            }
+        });
+        buttons.add("Wyśrodkuj", "center", graphics.w / 2, buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+                gest1.center();
+                gest1.move(graphics.w/2, graphics.h/2);
+            }
+        });
+
         try {
             setAppMode(Types.AppMode.MENU);
         } catch (Exception e) {
@@ -71,6 +75,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         }
         //odczekanie przed czyszczeniem konsoli
         Output.echoWait(4000);
+        graphics.init = true;
         init = true;
     }
 
@@ -85,15 +90,11 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     public void pause() {
-        if (sensors != null) {
-            sensors.unregister();
-        }
+
     }
 
     public void resume() {
-        if (sensors != null) {
-            sensors.register();
-        }
+
     }
 
     public void quit() {
@@ -118,7 +119,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     @Override
-    public void touch_down(float touch_x, float touch_y) {
+    public void touchDown(float touch_x, float touch_y) {
         if (buttons.checkPressed(touch_x, touch_y)) return;
         if (touchpanel != null) {
             touchpanel.touch_down(touch_x, touch_y);
@@ -126,14 +127,15 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     @Override
-    public void touch_move(float touch_x, float touch_y) {
+    public void touchMove(float touch_x, float touch_y) {
+        if (buttons.checkMoved(touch_x, touch_y)) return;
         if (touchpanel != null) {
             touchpanel.touch_move(touch_x, touch_y);
         }
     }
 
     @Override
-    public void touch_up(float touch_x, float touch_y) {
+    public void touchUp(float touch_x, float touch_y) {
         if (buttons.checkReleased(touch_x, touch_y)) return;
         if (touchpanel != null) {
             touchpanel.touch_up(touch_x, touch_y);
@@ -141,7 +143,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     @Override
-    public void resize_event() {
+    public void resizeEvent() {
         app.w = graphics.w;
         app.h = graphics.h;
         if (!init) init();
@@ -181,11 +183,12 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
 
     public void setAppMode(Types.AppMode mode) throws Exception {
         app.mode = mode;
-        buttons.hideAll();;
+        buttons.hideAll();
         if (app.mode == Types.AppMode.MENU) {
-            buttons.setVisible("clear");
             buttons.setVisible("minimize");
             buttons.setVisible("exit");
+            buttons.setVisible("clear");
+            buttons.setVisible("center");
         } else if (app.mode == Types.AppMode.COMPASS) {
             buttons.setVisible("back");
         }

@@ -1,5 +1,6 @@
 package igrek.touchinterface.logic;
 
+import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.Output;
@@ -16,8 +17,8 @@ public class TouchPanel {
         this.engine = engine;
         this.w = w;
         this.h = h;
-        dpi = App.geti().engine.activity.getResources().getDisplayMetrics().densityDpi;
         app = App.geti();
+        dpi = engine.activity.getResources().getDisplayMetrics().densityDpi;
         Output.log("DPI urządzenia: " + dpi);
     }
 
@@ -29,15 +30,23 @@ public class TouchPanel {
         return cm / INCH * dpi;
     }
 
+    public float partialW(float partOfWidth){
+        return w * partOfWidth;
+    }
+
     public boolean touch_down(float touch_x, float touch_y) {
         start_x = touch_x;
         start_y = touch_y;
+
+        engine.gest1 = new Track();
+        engine.gest1.addPoint(touch_x, touch_y);
         //controlAbsolute(touch_x, touch_y);
         return true;
         //return false;
     }
 
     public boolean touch_move(float touch_x, float touch_y) {
+        engine.gest1.addPoint(touch_x, touch_y);
         return false;
     }
 

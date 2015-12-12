@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         //schowanie paska tytułu
         if (Config.hide_taskbar) {
-            getSupportActionBar().hide();
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().hide();
+            }
         }
         //fullscreen
         if (Config.fullscreen) {
@@ -30,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         engine = new Engine(this);
-        setContentView(engine.graphics);
     }
 
     @Override
@@ -72,9 +73,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
         //event obsłużony lub przekazany dalej
-        return engine.options_select(id) || super.onOptionsItemSelected(item);
+        return engine.options_select(item.getItemId()) || super.onOptionsItemSelected(item);
     }
 
     @Override
