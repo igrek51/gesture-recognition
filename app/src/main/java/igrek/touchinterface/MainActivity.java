@@ -12,6 +12,7 @@ import igrek.touchinterface.logic.Engine;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.Output;
 
+//TODO: odpalić opencv
 public class MainActivity extends AppCompatActivity {
     private Engine engine = null;
 

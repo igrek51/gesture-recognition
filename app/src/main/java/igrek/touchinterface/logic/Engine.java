@@ -10,6 +10,17 @@ import igrek.touchinterface.managers.*;
 import igrek.touchinterface.settings.*;
 import igrek.touchinterface.system.Output;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.core.Point;
+import org.opencv.imgproc.Imgproc;
+
 public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel {
     boolean init = false;
     boolean running = true;
@@ -25,6 +36,8 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
 
     public Track gest1;
 
+    private BaseLoaderCallback mLoaderCallback;
+
     public Engine(Activity activity) {
         this.activity = activity;
         Output.reset();
@@ -36,6 +49,22 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
 activity.setContentView(graphics);
         //files = new Files(activity);
         Output.log("Utworzenie aplikacji.");
+
+        mLoaderCallback = new BaseLoaderCallback(this.activity) {
+            @Override
+            public void onManagerConnected(int status) {
+                switch (status) {
+                    case LoaderCallbackInterface.SUCCESS:
+                    {
+                        Output.log("OpenCV loaded successfully");
+                    } break;
+                    default:
+                    {
+                        super.onManagerConnected(status);
+                    } break;
+                }
+            }
+        };
     }
 
     public void init() {
@@ -93,8 +122,20 @@ activity.setContentView(graphics);
 
     }
 
-    public void resume() {
+    /*
+    static{
+        System.loadLibrary("opencv_java3");
+    }
+    */
 
+    public void resume() {
+        if (!OpenCVLoader.initDebug()) {
+            Output.log("Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, activity, mLoaderCallback);
+        } else {
+            Output.log("OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
     }
 
     public void quit() {
