@@ -3,6 +3,7 @@ package igrek.touchinterface.logic;
 import android.app.Activity;
 import android.content.Intent;
 
+import igrek.touchinterface.gestures.AnglePlot;
 import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.graphics.Buttons.*;
@@ -13,14 +14,13 @@ import igrek.touchinterface.system.Output;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.core.Point;
-import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
+import java.util.List;
+
+//TODO: zapisywanie wykresów kątów gestów
+//TODO: rozpoznawanie pojedynczych gestów: korelacja sąsiadów
+//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył
 public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel {
     boolean init = false;
     boolean running = true;
@@ -34,7 +34,9 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public Preferences preferences;
     public InputManager inputmanager = null;
 
-    public Track gest1;
+    public Track gest1 = null;
+    public List<Track> gestures;
+    public AnglePlot plot1 = null;
 
     private BaseLoaderCallback mLoaderCallback;
 
@@ -46,7 +48,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         graphics = new Graphics(activity, this);
         buttons = new Buttons();
         timer = new TimerManager(this, Config.timer_interval0);
-activity.setContentView(graphics);
+        activity.setContentView(graphics);
         //files = new Files(activity);
         Output.log("Utworzenie aplikacji.");
 
@@ -54,14 +56,14 @@ activity.setContentView(graphics);
             @Override
             public void onManagerConnected(int status) {
                 switch (status) {
-                    case LoaderCallbackInterface.SUCCESS:
-                    {
+                    case LoaderCallbackInterface.SUCCESS: {
                         Output.log("OpenCV loaded successfully");
-                    } break;
-                    default:
-                    {
+                    }
+                    break;
+                    default: {
                         super.onManagerConnected(status);
-                    } break;
+                    }
+                    break;
                 }
             }
         };
@@ -74,7 +76,7 @@ activity.setContentView(graphics);
         control = new Control(this);
         inputmanager = new InputManager(activity, graphics);
         //przyciski
-		//TODO: rozmiary buttonów w module grafiki
+        //TODO: rozmiary buttonów i ich widocznosc w module grafiki
         buttons.add("Minimalizuj", "minimize", 0, 0, graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
                 minimize();
@@ -90,13 +92,7 @@ activity.setContentView(graphics);
                 Output.reset();
             }
         });
-        buttons.add("Wyśrodkuj", "center", graphics.w / 2, buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
-            public void clicked() throws Exception {
-                gest1.center();
-                gest1.move(graphics.w/2, graphics.h/2);
-            }
-        });
-
+        gestures = new ArrayList<>();
         try {
             setAppMode(Types.AppMode.MENU);
         } catch (Exception e) {
@@ -153,7 +149,13 @@ activity.setContentView(graphics);
         try {
             //obsługa przycisków
             buttons.executeClicked();
-
+            //zdejmowanie gestu po braku aktywności
+            if (gest1 != null) {
+                if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
+                    addNewTrack();
+                    gest1 = null;
+                }
+            }
         } catch (Exception e) {
             Output.error(e);
         }
@@ -229,9 +231,17 @@ activity.setContentView(graphics);
             buttons.setVisible("minimize");
             buttons.setVisible("exit");
             buttons.setVisible("clear");
-            buttons.setVisible("center");
         } else if (app.mode == Types.AppMode.COMPASS) {
             buttons.setVisible("back");
         }
+    }
+
+    public void addNewTrack() {
+        gest1 = Track.filteredTrack(Track.getAllPixels(gest1));
+        gestures.add(gest1);
+        while(gestures.size()>4){
+            gestures.remove(0);
+        }
+        plot1 = new AnglePlot(gest1);
     }
 }

@@ -12,7 +12,7 @@ import igrek.touchinterface.logic.Engine;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.Output;
 
-//TODO: odpalić opencv
+//TODO: rozpoznawanie 3 (lub 2) ostatnich tras przed (niezinterpretowanych)
 public class MainActivity extends AppCompatActivity {
     private Engine engine = null;
 

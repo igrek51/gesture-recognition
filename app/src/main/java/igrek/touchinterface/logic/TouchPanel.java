@@ -38,6 +38,10 @@ public class TouchPanel {
         start_x = touch_x;
         start_y = touch_y;
 
+        if(engine.gest1 != null) {
+            engine.addNewTrack();
+        }
+        app.gesture_edit_time = System.currentTimeMillis();
         engine.gest1 = new Track();
         engine.gest1.addPoint(touch_x, touch_y);
         //controlAbsolute(touch_x, touch_y);
@@ -46,7 +50,10 @@ public class TouchPanel {
     }
 
     public boolean touch_move(float touch_x, float touch_y) {
-        engine.gest1.addPoint(touch_x, touch_y);
+        if(engine.gest1 != null) {
+            engine.gest1.addPoint(touch_x, touch_y);
+        }
+        app.gesture_edit_time = System.currentTimeMillis();
         return false;
     }
 

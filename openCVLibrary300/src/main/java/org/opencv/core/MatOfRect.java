@@ -17,7 +17,6 @@ public class MatOfRect extends Mat {
         super(addr);
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public static MatOfRect fromNativeAddr(long addr) {
@@ -28,7 +27,6 @@ public class MatOfRect extends Mat {
         super(m, Range.all());
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public MatOfRect(Rect...a) {
@@ -54,7 +52,7 @@ public class MatOfRect extends Mat {
             buff[_channels*i+2] = (int) r.width;
             buff[_channels*i+3] = (int) r.height;
         }
-        put(0, 0, buff); //TODO: check ret val!
+        put(0, 0, buff);
     }
 
 
@@ -64,7 +62,7 @@ public class MatOfRect extends Mat {
         if(num == 0)
             return a;
         int buff[] = new int[num * _channels];
-        get(0, 0, buff); //TODO: check ret val!
+        get(0, 0, buff);
         for(int i=0; i<num; i++)
             a[i] = new Rect(buff[i*_channels], buff[i*_channels+1], buff[i*_channels+2], buff[i*_channels+3]);
         return a;

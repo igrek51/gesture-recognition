@@ -62,6 +62,14 @@ public class Config {
         //promień środkowego koła (sterowanie bezwzględne) jako część szerokości ekranu
         public static final float center_radius = 0.167f;
     }
+    //  GESTY
+    public static class Gestures {
+        public static final int max_wait_time = 500; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
+        public static final float plot_height = 0.5f;
+        public static final float plot_x_scale = 0.5f;
+        public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
+        public static final int normalize_x_samples = 128;
+    }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
     //  KLAWIATURA EKRANOWA

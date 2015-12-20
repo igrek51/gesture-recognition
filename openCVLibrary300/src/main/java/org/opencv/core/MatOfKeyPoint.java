@@ -18,7 +18,6 @@ public class MatOfKeyPoint extends Mat {
         super(addr);
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public static MatOfKeyPoint fromNativeAddr(long addr) {
@@ -29,7 +28,6 @@ public class MatOfKeyPoint extends Mat {
         super(m, Range.all());
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public MatOfKeyPoint(KeyPoint...a) {
@@ -58,7 +56,7 @@ public class MatOfKeyPoint extends Mat {
             buff[_channels*i+5] = kp.octave;
             buff[_channels*i+6] = kp.class_id;
         }
-        put(0, 0, buff); //TODO: check ret val!
+        put(0, 0, buff);
     }
 
     public KeyPoint[] toArray() {
@@ -67,7 +65,7 @@ public class MatOfKeyPoint extends Mat {
         if(num == 0)
             return a;
         float buff[] = new float[num * _channels];
-        get(0, 0, buff); //TODO: check ret val!
+        get(0, 0, buff);
         for(int i=0; i<num; i++)
             a[i] = new KeyPoint( buff[_channels*i+0], buff[_channels*i+1], buff[_channels*i+2], buff[_channels*i+3],
                                  buff[_channels*i+4], (int) buff[_channels*i+5], (int) buff[_channels*i+6] );

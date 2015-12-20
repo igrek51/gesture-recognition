@@ -17,7 +17,6 @@ public class MatOfInt4 extends Mat {
         super(addr);
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public static MatOfInt4 fromNativeAddr(long addr) {
@@ -28,7 +27,6 @@ public class MatOfInt4 extends Mat {
         super(m, Range.all());
         if( !empty() && checkVector(_channels, _depth) < 0 )
             throw new IllegalArgumentException("Incompatible Mat");
-        //FIXME: do we need release() here?
     }
 
     public MatOfInt4(int...a) {
@@ -46,7 +44,7 @@ public class MatOfInt4 extends Mat {
             return;
         int num = a.length / _channels;
         alloc(num);
-        put(0, 0, a); //TODO: check ret val!
+        put(0, 0, a);
     }
 
     public int[] toArray() {
@@ -56,7 +54,7 @@ public class MatOfInt4 extends Mat {
         int[] a = new int[num * _channels];
         if(num == 0)
             return a;
-        get(0, 0, a); //TODO: check ret val!
+        get(0, 0, a);
         return a;
     }
 

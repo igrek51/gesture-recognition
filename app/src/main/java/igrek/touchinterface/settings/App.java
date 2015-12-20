@@ -30,6 +30,7 @@ public class App {
 
     //  ZMIENNE APLIKACJI
     public Types.AppMode mode = Types.AppMode.MENU;
+    public long gesture_edit_time = 0;
     //rozmiar ekranu
     public int w = 0;
     public int h = 0;
