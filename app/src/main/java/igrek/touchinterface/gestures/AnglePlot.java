@@ -1,12 +1,16 @@
 package igrek.touchinterface.gestures;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import igrek.touchinterface.settings.Config;
+
 public class AnglePlot {
-    public float[] angles = null;
+    public List<Float> angles = null;
     Point start = null;
 
     public AnglePlot(Track t) {
+        angles = new ArrayList<>();
         List<Point> points = t.points;
         if (!points.isEmpty()) {
             start = new Point(points.get(0));
@@ -16,7 +20,7 @@ public class AnglePlot {
 
     public int getLength() {
         if (angles != null) {
-            return angles.length;
+            return angles.size();
         }
         return 0;
     }
@@ -48,20 +52,37 @@ public class AnglePlot {
     private void calculateAngles(List<Point> points) {
         if (points.size() <= 1) {
             //TODO: kropka
-            angles = null;
         } else {
-            angles = new float[points.size() - 1];
+            angles = new ArrayList<>();
             float dx, dy;
             for (int i = 0; i < points.size() - 1; i++) {
                 dx = points.get(i + 1).x - points.get(i).x;
                 dy = points.get(i + 1).y - points.get(i).y;
-                angles[i] = (float) Math.atan2(-dy, dx);
+                angles.add(new Float(Math.atan2(-dy, dx)));
             }
         }
     }
 
-    public void normalizeX(){
+    private float interpolateSample(float y1, float y2, float pos) {
+        //interpolacja liniowa
+        return y1 + (y2 - y1) * pos;
+    }
 
+    public void normalizeX() {
+        List<Float> angles2 = new ArrayList<>();
+        if(angles.size() > 0) {
+            float y1, y2, pos;
+            int posi;
+            for (int i = 0; i < Config.Gestures.normalize_x_samples; i++) {
+                pos = angles.size() * i / Config.Gestures.normalize_x_samples;
+                posi = (int) pos; //zakres: [0; angles.size()-1]
+                pos -= posi; //reszta - położenie między punktami
+                y1 = angles.get(posi);
+                y2 = (posi + 1 >= angles.size()) ? angles.get(posi) : angles.get(posi + 1);
+                angles2.add(interpolateSample(y1, y2, pos));
+            }
+        }
+        angles = angles2;
     }
 
 }

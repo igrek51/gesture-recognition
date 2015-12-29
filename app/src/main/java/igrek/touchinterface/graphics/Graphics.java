@@ -123,7 +123,7 @@ public class Graphics extends CanvasView {
 
     public void drawGesturePlot() {
         if (engine.plot1 != null && engine.gest1 == null) {
-            if (engine.plot1.angles != null) {
+            if (engine.plot1.angles != null && engine.plot1.angles.size() > 1) {
                 float hr2 = h * Config.Gestures.plot_height / 2;
                 //układ współrzędnych
                 setColor(0x0000a0);
@@ -135,12 +135,12 @@ public class Graphics extends CanvasView {
                 drawLine(0, h / 2 + hr2, w, h / 2 + hr2);
                 //wykres
                 float x_scale = Config.Gestures.plot_x_scale;
-                if (engine.plot1.angles.length * x_scale > w) {
-                    x_scale = (float) w / engine.plot1.angles.length;
+                if (engine.plot1.getLength() * x_scale > w) {
+                    x_scale = (float) w / engine.plot1.getLength();
                 }
                 setColor(0x00a0a0);
-                for (int i = 1; i < engine.plot1.angles.length; i++) {
-                    drawLine(x_scale * (i - 1), h / 2 - (float) (engine.plot1.angles[i - 1] * hr2 / Math.PI), x_scale * i, h / 2 - (float) (engine.plot1.angles[i] * hr2 / Math.PI));
+                for (int i = 1; i < engine.plot1.getLength(); i++) {
+                    drawLine(x_scale * (i - 1), h / 2 - (float) (engine.plot1.angles.get(i - 1) * hr2 / Math.PI), x_scale * i, h / 2 - (float) (engine.plot1.angles.get(i) * hr2 / Math.PI));
                 }
             }
         }

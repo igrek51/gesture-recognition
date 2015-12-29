@@ -10,7 +10,7 @@ public class Config {
         public static final int echo_spaces = 43;
         public static final int echo_showtime = 1800; //[ms]
         public static final int echo_line_max = 40; //maksymalna liczba znaków w 1 wierszu
-        public static final boolean show_exceptions_trace = false;
+        public static final boolean show_exceptions_trace = true;
     }
     //  SCREEN
     public static final int fullscreen_flag = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;

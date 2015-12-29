@@ -20,7 +20,9 @@ import java.util.List;
 
 //TODO: zapisywanie wykresów kątów gestów
 //TODO: rozpoznawanie pojedynczych gestów: korelacja sąsiadów
+//TODO: korelacja wzajemna (cross-correlation) - znalezienie przesunięcia o maksymalnej korelacji
 //TODO: rozpoznawanie złożonych gestów: analiza 2 w tył
+//TODO: a może jednak łancuchy Freemana
 public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel {
     boolean init = false;
     boolean running = true;
@@ -243,5 +245,6 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
             gestures.remove(0);
         }
         plot1 = new AnglePlot(gest1);
+        plot1.normalizeX();
     }
 }
