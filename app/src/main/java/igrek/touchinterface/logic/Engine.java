@@ -3,11 +3,14 @@ package igrek.touchinterface.logic;
 import android.app.Activity;
 import android.content.Intent;
 
-import igrek.touchinterface.gestures.AnglePlot;
+import igrek.touchinterface.gestures.FreemanHistogram;
+import igrek.touchinterface.gestures.SingleGesture;
 import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.graphics.Buttons.*;
 import igrek.touchinterface.managers.*;
+import igrek.touchinterface.managers.files.Files;
+import igrek.touchinterface.managers.files.Path;
 import igrek.touchinterface.settings.*;
 import igrek.touchinterface.system.Output;
 
@@ -18,11 +21,11 @@ import org.opencv.android.OpenCVLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: zapisywanie wykresów kątów gestów
-//TODO: rozpoznawanie pojedynczych gestów: korelacja sąsiadów
-//TODO: korelacja wzajemna (cross-correlation) - znalezienie przesunięcia o maksymalnej korelacji
 //TODO: rozpoznawanie złożonych gestów: analiza 2 w tył
-//TODO: a może jednak łancuchy Freemana
+//TODO: zapis do pliku
+//TODO: wybór lokalizacji bazy danych
+// /storage/extSdCard/Android/data/igrek.touchinterface/samples
+//TODO: wykorzystanie z OpenCV: filtracja szumów, generowanie pełnego konturu, obliczanie łańcuchów freemana, korelacja histogramów
 public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel {
     boolean init = false;
     boolean running = true;
@@ -33,14 +36,15 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public Buttons buttons;
     TouchPanel touchpanel = null;
     Control control = null;
+    Files files;
     public Preferences preferences;
     public InputManager inputmanager = null;
-
-    public Track gest1 = null;
-    public List<Track> gestures;
-    public AnglePlot plot1 = null;
-
     private BaseLoaderCallback mLoaderCallback;
+
+    public Track track1 = null;
+    public List<Track> tracks;
+    public FreemanHistogram fHistogram = null;
+    public SingleGesture singleGesture = null;
 
     public Engine(Activity activity) {
         this.activity = activity;
@@ -51,24 +55,27 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         buttons = new Buttons();
         timer = new TimerManager(this, Config.timer_interval0);
         activity.setContentView(graphics);
-        //files = new Files(activity);
+        files = new Files(activity);
         Output.log("Utworzenie aplikacji.");
 
         mLoaderCallback = new BaseLoaderCallback(this.activity) {
             @Override
             public void onManagerConnected(int status) {
-                switch (status) {
-                    case LoaderCallbackInterface.SUCCESS: {
-                        Output.log("OpenCV loaded successfully");
-                    }
-                    break;
-                    default: {
-                        super.onManagerConnected(status);
-                    }
-                    break;
+                if (status == LoaderCallbackInterface.SUCCESS) {
+                    Output.info("OpenCV loaded successfully");
+                } else {
+                    super.onManagerConnected(status);
                 }
             }
         };
+        if (!OpenCVLoader.initDebug()) {
+            Output.info("Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, activity, mLoaderCallback);
+        } else {
+            Output.info("OpenCV library found inside package. Using it!");
+            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+        }
+
     }
 
     public void init() {
@@ -79,9 +86,9 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         inputmanager = new InputManager(activity, graphics);
         //przyciski
         //TODO: rozmiary buttonów i ich widocznosc w module grafiki
-        buttons.add("Minimalizuj", "minimize", 0, 0, graphics.w / 2, 0, new ButtonActionListener() {
+        buttons.add("Czyść konsolę", "clear", 0, 0, graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
-                minimize();
+                Output.reset();
             }
         });
         buttons.add("Zakończ", "exit", graphics.w / 2, 0, graphics.w / 2, 0, new ButtonActionListener() {
@@ -89,12 +96,18 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
                 control.executeEvent(Types.ControlEvent.BACK);
             }
         });
-        buttons.add("Czyść konsolę", "clear", 0, buttons.lastYBottom(), graphics.w / 2, 0, new ButtonActionListener() {
+        buttons.add("Lokalizacja wzorców", "samplesPath", 0, buttons.lastYBottom(), graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
-                Output.reset();
+                clickedPathPreferences();
             }
         });
-        gestures = new ArrayList<>();
+        buttons.add("Zapisz wzorzec", "saveSample", 0, buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+                saveCurrentSample();
+            }
+        });
+        preferencesLoad();
+        tracks = new ArrayList<>();
         try {
             setAppMode(Types.AppMode.MENU);
         } catch (Exception e) {
@@ -107,7 +120,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     @Override
-    public void timer_run() {
+    public void timerRun() {
         if (!running) return;
         if (!init) return;
         update();
@@ -120,20 +133,11 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
 
     }
 
-    /*
-    static{
+    /*static{
         System.loadLibrary("opencv_java3");
-    }
-    */
-
+    }*/
     public void resume() {
-        if (!OpenCVLoader.initDebug()) {
-            Output.log("Internal OpenCV library not found. Using OpenCV Manager for initialization");
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, activity, mLoaderCallback);
-        } else {
-            Output.log("OpenCV library found inside package. Using it!");
-            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
-        }
+
     }
 
     public void quit() {
@@ -149,13 +153,14 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
 
     public void update() {
         try {
+            //TODO: repaint tylko w potrzebie a nie w każdej klatce
+            graphics.refresh();
             //obsługa przycisków
             buttons.executeClicked();
             //zdejmowanie gestu po braku aktywności
-            if (gest1 != null) {
+            if (track1 != null) {
                 if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
                     addNewTrack();
-                    gest1 = null;
                 }
             }
         } catch (Exception e) {
@@ -167,7 +172,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public void touchDown(float touch_x, float touch_y) {
         if (buttons.checkPressed(touch_x, touch_y)) return;
         if (touchpanel != null) {
-            touchpanel.touch_down(touch_x, touch_y);
+            touchpanel.touchDown(touch_x, touch_y);
         }
     }
 
@@ -175,7 +180,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public void touchMove(float touch_x, float touch_y) {
         if (buttons.checkMoved(touch_x, touch_y)) return;
         if (touchpanel != null) {
-            touchpanel.touch_move(touch_x, touch_y);
+            touchpanel.touchMove(touch_x, touch_y);
         }
     }
 
@@ -183,7 +188,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public void touchUp(float touch_x, float touch_y) {
         if (buttons.checkReleased(touch_x, touch_y)) return;
         if (touchpanel != null) {
-            touchpanel.touch_up(touch_x, touch_y);
+            touchpanel.touchUp(touch_x, touch_y);
         }
     }
 
@@ -195,7 +200,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         Output.log("Rozmiar ekranu zmieniony na: " + graphics.w + "px x " + graphics.h + "px");
     }
 
-    public void keycode_back() {
+    public void keycodeBack() {
         if (inputmanager.visible) {
             inputmanager.inputScreenHide();
             return;
@@ -207,7 +212,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         }
     }
 
-    public void keycode_menu() {
+    public void keycodeMenu() {
         try {
             control.executeEvent(Types.ControlEvent.MENU);
         } catch (Exception e) {
@@ -215,7 +220,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         }
     }
 
-    public boolean options_select(int id) {
+    public boolean optionsSelect(int id) {
         return false;
     }
 
@@ -230,21 +235,70 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         app.mode = mode;
         buttons.hideAll();
         if (app.mode == Types.AppMode.MENU) {
-            buttons.setVisible("minimize");
             buttons.setVisible("exit");
             buttons.setVisible("clear");
-        } else if (app.mode == Types.AppMode.COMPASS) {
-            buttons.setVisible("back");
+            buttons.setVisible("samplesPath");
+            buttons.setVisible("saveSample");
         }
     }
 
     public void addNewTrack() {
-        gest1 = Track.filteredTrack(Track.getAllPixels(gest1));
-        gestures.add(gest1);
-        while(gestures.size()>4){
-            gestures.remove(0);
+        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(track1));
+        tracks.add(track1);
+        while (tracks.size() > 4) {
+            tracks.remove(0);
         }
-        plot1 = new AnglePlot(gest1);
-        plot1.normalizeX();
+        fHistogram = new FreemanHistogram(filteredTrack);
+        singleGesture = new SingleGesture(track1.getStart(), fHistogram);
+        track1 = null;
+    }
+
+    public void clickedPathPreferences() {
+        inputmanager.inputScreenShow("Ścieżka do wzorców:", app.samplesPath, new InputManager.InputHandlerCancellable() {
+            @Override
+            public void onAccept(String inputText) {
+                app.samplesPath = inputText;
+                preferencesSave();
+            }
+        });
+    }
+
+    public void preferencesSave() {
+        //zapisanie do shared preferences
+        preferences.setString("samplesPath", app.samplesPath);
+        Output.info("Zapisano preferencje.");
+    }
+
+    public void preferencesLoad() {
+        //wczytanie z shared preferences
+        if (preferences.exists("samplesPath")) {
+            app.samplesPath = preferences.getString("samplesPath");
+            Output.info("Wczytano ścieżkę wzorców: " + app.samplesPath);
+        } else {
+            Output.info("Wczytano domyślną ścieżkę wzorców: " + app.samplesPath);
+        }
+    }
+
+    public void saveCurrentSample() {
+        if (fHistogram == null || fHistogram.histogram == null || singleGesture == null) {
+            Output.error("Brak histogramu do zapisania");
+            return;
+        }
+        inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputManager.InputHandlerCancellable() {
+            @Override
+            public void onAccept(String inputText) {
+                saveCurrentSample2(inputText);
+            }
+        });
+    }
+
+    public void saveCurrentSample2(String character) {
+        Path samplesPath2 = files.pathSD().append(app.samplesPath);
+        //wyznaczanie nazwy pliku
+        int sampleNumber = 1;
+        while (files.exists(samplesPath2.append(character + "-" + sampleNumber).toString())) {
+            sampleNumber++;
+        }
+        //serializacja wzorca i zapisanie histogramu
     }
 }

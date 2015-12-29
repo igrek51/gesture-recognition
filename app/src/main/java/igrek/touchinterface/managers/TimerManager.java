@@ -9,7 +9,7 @@ import igrek.touchinterface.settings.Config;
 public class TimerManager {
     //metoda run do zaimplementowania
     public interface MasterOfTime {
-        void timer_run();
+        void timerRun();
     }
 
     private MasterOfTime master_of_time = null;
@@ -48,7 +48,7 @@ public class TimerManager {
                 gameengine.activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        master_of_time.timer_run();
+                        master_of_time.timerRun();
                     }
                 });
             }

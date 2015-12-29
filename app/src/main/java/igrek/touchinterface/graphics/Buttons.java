@@ -93,7 +93,7 @@ public class Buttons {
         for (Button b : buttons) {
             if (b.id.equals(id)) return b;
         }
-        Output.errorthrow("Nie znaleziono przycisku o nazwie: " + id);
+        Output.errorThrow("Nie znaleziono przycisku o nazwie: " + id);
         return null;
     }
 

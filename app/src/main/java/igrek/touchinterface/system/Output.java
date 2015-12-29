@@ -65,7 +65,7 @@ public class Output {
         }
     }
 
-    public static void errorthrow(String e) throws Exception {
+    public static void errorThrow(String e) throws SoftErrorException {
         throw new SoftErrorException(e);
     }
 

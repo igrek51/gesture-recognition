@@ -1,4 +1,4 @@
-package igrek.touchinterface.managers;
+package igrek.touchinterface.managers.files;
 
 import android.app.Activity;
 import android.os.Environment;
@@ -17,6 +17,10 @@ public class Files {
 
     public Files(Activity activity) {
         this.activity = activity;
+    }
+
+    public Path pathSD(){
+        return new Path(Environment.getExternalStorageDirectory().toString());
     }
 
     public String pathSD(String path) {

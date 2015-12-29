@@ -75,16 +75,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         //event obsłużony lub przekazany dalej
-        return engine.options_select(item.getItemId()) || super.onOptionsItemSelected(item);
+        return engine.optionsSelect(item.getItemId()) || super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            engine.keycode_back();
+            engine.keycodeBack();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_MENU) {
-            engine.keycode_menu();
+            engine.keycodeMenu();
             return true;
         }
         return super.onKeyDown(keyCode, event);

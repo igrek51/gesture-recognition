@@ -235,4 +235,13 @@ public class CanvasView extends View {
         canvas.drawRect(left, top, right, bottom, paint);
         paint.setStrokeWidth(0);
     }
+
+    //relative layout
+    public float partialW(float partOfWidth){
+        return w * partOfWidth;
+    }
+
+    public float partialH(float partOfHeight){
+        return h * partOfHeight;
+    }
 }

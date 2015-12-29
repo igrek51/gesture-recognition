@@ -28,10 +28,11 @@ public class App {
 
     public Engine engine;
 
-    //  ZMIENNE APLIKACJI
-    public Types.AppMode mode = Types.AppMode.MENU;
-    public long gesture_edit_time = 0;
     //rozmiar ekranu
     public int w = 0;
     public int h = 0;
+    //  ZMIENNE APLIKACJI
+    public Types.AppMode mode = Types.AppMode.MENU;
+    public long gesture_edit_time = 0;
+    public String samplesPath = "Android/data/igrek.touchinterface/samples/";
 }

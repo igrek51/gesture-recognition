@@ -2,7 +2,6 @@ package igrek.touchinterface.logic;
 
 import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.settings.App;
-import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.Output;
 
 public class TouchPanel {
@@ -22,11 +21,11 @@ public class TouchPanel {
         Output.log("DPI urządzenia: " + dpi);
     }
 
-    public float pixels_to_cm(float pixels) {
+    public float pixelsToCm(float pixels) {
         return pixels / dpi * INCH;
     }
 
-    public float cm_to_pixels(float cm) {
+    public float cmToPixels(float cm) {
         return cm / INCH * dpi;
     }
 
@@ -34,92 +33,32 @@ public class TouchPanel {
         return w * partOfWidth;
     }
 
-    public boolean touch_down(float touch_x, float touch_y) {
+    public boolean touchDown(float touch_x, float touch_y) {
         start_x = touch_x;
         start_y = touch_y;
 
-        if(engine.gest1 != null) {
+        if(engine.track1 != null) {
             engine.addNewTrack();
         }
         app.gesture_edit_time = System.currentTimeMillis();
-        engine.gest1 = new Track();
-        engine.gest1.addPoint(touch_x, touch_y);
-        //controlAbsolute(touch_x, touch_y);
+        engine.track1 = new Track();
+        engine.track1.addPoint(touch_x, touch_y);
         return true;
-        //return false;
     }
 
-    public boolean touch_move(float touch_x, float touch_y) {
-        if(engine.gest1 != null) {
-            engine.gest1.addPoint(touch_x, touch_y);
+    public boolean touchMove(float touch_x, float touch_y) {
+        if(engine.track1 != null) {
+            engine.track1.addPoint(touch_x, touch_y);
         }
         app.gesture_edit_time = System.currentTimeMillis();
         return false;
     }
 
-    public boolean touch_up(float touch_x, float touch_y) {
+    public boolean touchUp(float touch_x, float touch_y) {
         float rtx = touch_x / w;
         float rty = touch_y / h;
 //        control_realtive(touch_x, touch_y);
 //        return true;
         return false;
     }
-
-    public void controlAbsolute(float touch_x, float touch_y) throws Exception {
-        //sprawdzenie kółka w środku
-        if (Control.isPointInCircle(touch_x, touch_y, w / 2, h / 2, Config.Touch.center_radius * w)) {
-            engine.control.executeEvent(Types.ControlEvent.OK);
-            return;
-        }
-        float a = (float) h / w;
-        //lewa ćwiartka
-        if (!Control.isPointAboveLine(touch_x, touch_y, -a, h) && Control.isPointAboveLine(touch_x, touch_y, a, 0)) {
-            engine.control.executeEvent(Types.ControlEvent.LEFT);
-        }
-        //prawa ćwiartka
-        else if (Control.isPointAboveLine(touch_x, touch_y, -a, h) && !Control.isPointAboveLine(touch_x, touch_y, a, 0)) {
-            engine.control.executeEvent(Types.ControlEvent.RIGHT);
-        }
-        //górna ćwiartka
-        else if (!Control.isPointAboveLine(touch_x, touch_y, -a, h) && !Control.isPointAboveLine(touch_x, touch_y, a, 0)) {
-            engine.control.executeEvent(Types.ControlEvent.UP);
-        }
-        //dolna ćwiartka
-        else if (Control.isPointAboveLine(touch_x, touch_y, -a, h) && Control.isPointAboveLine(touch_x, touch_y, a, 0)) {
-            engine.control.executeEvent(Types.ControlEvent.DOWN);
-        }
-    }
-
-    public void controlRealtive(float touch_x, float touch_y) throws Exception {
-        float distance = (float) Math.sqrt((touch_x - start_x) * (touch_x - start_x) + (touch_y - start_y) * (touch_y - start_y));
-        if (distance <= cm_to_pixels(Config.Touch.max_assert_distance)) {
-            engine.control.executeEvent(Types.ControlEvent.OK);
-            return;
-        }
-        if (distance < cm_to_pixels(Config.Touch.min_relative_distance)) {
-            Output.log("Touchpanel: Sterowanie względne: przemieszczenie za krótkie - brak akcji");
-            return;
-        }
-        //obliczenie kąta względem osi X+
-        float angle = (float) (Math.atan2(touch_y - start_y, touch_x - start_x) * 180 / Math.PI);
-        //w prawo: 0
-        if (Control.isAngleInRange(angle, 0 - Config.Touch.max_angle_bias, 0 + Config.Touch.max_angle_bias)) {
-            engine.control.executeEvent(Types.ControlEvent.RIGHT);
-        }
-        //w dół: 90
-        else if (Control.isAngleInRange(angle, 90 - Config.Touch.max_angle_bias, 90 + Config.Touch.max_angle_bias)) {
-            engine.control.executeEvent(Types.ControlEvent.DOWN);
-        }
-        //w lewo: 180
-        else if (Control.isAngleInRange(angle, 180 - Config.Touch.max_angle_bias, 180 + Config.Touch.max_angle_bias)) {
-            engine.control.executeEvent(Types.ControlEvent.LEFT);
-        }
-        //w górę: 270
-        else if (Control.isAngleInRange(angle, 270 - Config.Touch.max_angle_bias, 270 + Config.Touch.max_angle_bias)) {
-            engine.control.executeEvent(Types.ControlEvent.UP);
-        } else {
-            Output.log("Touchpanel: Sterowanie względne: kąt zbyt odchylony - brak akcji");
-        }
-    }
-
 }

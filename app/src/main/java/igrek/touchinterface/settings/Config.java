@@ -6,7 +6,7 @@ public class Config {
     //STAŁE
     //  OUTPUT
     public static class Output {
-        public static final String logTag = "AppLog";
+        public static final String logTag = "log";
         public static final int echo_spaces = 43;
         public static final int echo_showtime = 1800; //[ms]
         public static final int echo_line_max = 40; //maksymalna liczba znaków w 1 wierszu
@@ -22,15 +22,15 @@ public class Config {
     public static final int timer_fps0 = 10;
     //  BUTTONY
     public static class Buttons {
-        public static final int fontsize = 12;
-        public static final int height = 35;
+        public static final int fontsize = 24;
+        public static final int height = 70;
         public static final int padding_h = 10;
-        public static final int padding_v = 5;
+        public static final int padding_v = 10;
     }
     //  CZCIONKI
     public static class Fonts {
-        public static final int fontsize = 12;
-        public static final int lineheight = 13;
+        public static final int fontsize = 24;
+        public static final int lineheight = 25;
     }
     //  KOLORY
     public static class Colors {
@@ -69,11 +69,10 @@ public class Config {
         public static final float plot_x_scale = 0.5f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int normalize_x_samples = 128;
+        public static class FreemanChains {
+            public static final int directions = 8;
+        }
     }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
-    //  KLAWIATURA EKRANOWA
-    public static final int keyboard_min_height = 100; //px
-    //  KOMPAS
-    public static final float compass_scale = 0.7f;
 }

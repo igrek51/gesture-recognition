@@ -11,7 +11,7 @@ public class AnglePlot {
 
     public AnglePlot(Track t) {
         angles = new ArrayList<>();
-        List<Point> points = t.points;
+        List<Point> points = t.getPoints();
         if (!points.isEmpty()) {
             start = new Point(points.get(0));
             calculateAngles(points);
