@@ -119,6 +119,11 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
                 gestureManager.recognizeSample(currentGesture);
             }
         });
+        buttons.add("Usuń wzorzec", "deleteSample", 0, buttons.lastYBottom(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+               deleteSample();
+            }
+        });
         preferencesLoad();
         lastTracks = new ArrayList<>();
         gestureManager = new GestureManager();
@@ -256,6 +261,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
             buttons.setVisible("saveSample");
             buttons.setVisible("listSamples");
             buttons.setVisible("recognizeSample");
+            buttons.setVisible("deleteSample");
         }
     }
 
@@ -313,5 +319,16 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
         });
     }
 
-
+    public void deleteSample(){
+        inputmanager.inputScreenShow("Nazwa pliku wzorca:", new InputManager.InputHandlerCancellable() {
+            @Override
+            public void onAccept(String inputText) {
+                try {
+                    gestureManager.deleteSample(inputText);
+                } catch (SoftErrorException e) {
+                    Output.error(e);
+                }
+            }
+        });
+    }
 }

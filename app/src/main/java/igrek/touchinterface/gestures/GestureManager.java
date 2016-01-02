@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import igrek.touchinterface.managers.files.Path;
@@ -25,6 +26,7 @@ public class GestureManager {
     public GestureManager() {
         app = App.geti();
         loadSamples();
+        sortSamples();
     }
 
     public Path getSamplesPath() {
@@ -55,6 +57,10 @@ public class GestureManager {
         Output.info("Załadowano wzorce: " + samples.size());
     }
 
+    public void sortSamples(){
+        Collections.sort(samples);
+    }
+
     public void listSamples() {
         Output.info("Lista wzorców: " + samples.size());
         for (SingleGesture sample : samples) {
@@ -72,6 +78,16 @@ public class GestureManager {
             Output.errorThrow("Nie znaleziono wzorca do usunięcia na liście.");
         }
         Output.info("Usunięto wzorzec.");
+    }
+
+    public void deleteSample(String filename) throws SoftErrorException {
+        for(SingleGesture sample : samples){
+            if(sample.getFilename().equals(filename)){
+                deleteSample(sample);
+                return;
+            }
+        }
+        Output.errorThrow("Nie znaleziono wzorca: "+filename);
     }
 
     public void saveSample(SingleGesture gesture, String character) throws SoftErrorException {
@@ -93,6 +109,7 @@ public class GestureManager {
             out.close();
             fileOut.close();
             samples.add(gesture);
+            sortSamples();
             Output.info("Zapisano wzorzec znaku (" + character + ") do pliku: " + filename);
         } catch (IOException e) {
             Output.errorThrow("Błąd przy serializacji do pliku: " + filename);
@@ -124,7 +141,7 @@ public class GestureManager {
         //obliczenie wsp. korelacji z każdym wzorcem
         for (SingleGesture sg : samples) {
             correl = singleGesturesCcorrelation(sg, gesture);
-            if (correl > correl_max) {
+            if (correl > correl_max || g_max == null) {
                 correl_max = correl;
                 g_max = sg;
             }

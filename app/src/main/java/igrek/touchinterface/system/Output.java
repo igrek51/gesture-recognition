@@ -93,20 +93,11 @@ public class Output {
     }
 
     private static void echoMultiline(String e) {
-        String next = "";
-        //podział komunikatu, jeśli nie mieści się w jednej linii
-        if (e.length() > Config.Output.echo_line_max) {
-            next = e.substring(Config.Output.echo_line_max);
-            e = e.substring(0, Config.Output.echo_line_max);
-        }
         if (echos.length() == 0) {
             echos = e;
             lastEcho = System.currentTimeMillis();
         } else {
             echos += "\n" + e;
-        }
-        if (next.length() > 0) {
-            echoMultiline(next);
         }
     }
 

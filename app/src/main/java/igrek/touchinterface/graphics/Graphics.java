@@ -62,7 +62,8 @@ public class Graphics extends CanvasView {
         setColor(Config.Colors.text);
         setFont();
         Output.echoTryClear();
-        drawTextMultiline(Output.echos, 0, 80 + 3 * Config.Buttons.height + 3 * Config.Fonts.lineheight, Config.Fonts.lineheight);
+        String splitecho = splitTextMultiline(Output.echos, w);
+        drawTextMultiline(splitecho, 0, h, Config.Fonts.lineheight, Types.Align.BOTTOM);
     }
 
     private void drawButtons() {

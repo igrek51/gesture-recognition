@@ -10,8 +10,12 @@ import android.graphics.Typeface;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.Engine;
+import igrek.touchinterface.settings.Config;
 
 public class CanvasView extends View {
     public int w, h;
@@ -143,6 +147,32 @@ public class CanvasView extends View {
         return textBounds.width();
     }
 
+    public String splitTextLine(String line, float width){
+        for (int i = 1; i < line.length(); i++) {
+            if(getTextWidth(line.substring(0, i)) < width)
+                continue;
+            return line.substring(0, i-1) + "\n" + splitTextLine(line.substring(i-1), width);
+        }
+        return line;
+    }
+
+    public String splitTextMultiline(String txt, float width) {
+        //wyłuskanie już podzielonych wierszy
+        String[] lines0 = txt.split("\n");
+        //podział pojedynczych wierszy
+        List<String> lines2 = new ArrayList<>();
+        for (String line : lines0) {
+            lines2.add(splitTextLine(line, width));
+        }
+        //poskładanie do jednego łańcucha
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < lines2.size(); i++) {
+            sb.append(lines2.get(i));
+            if (i < lines2.size() - 1) sb.append("\n");
+        }
+        return sb.toString();
+    }
+
     public void setFontSize(int textsize) {
         paint.setTextSize(textsize);
     }
@@ -237,11 +267,11 @@ public class CanvasView extends View {
     }
 
     //relative layout
-    public float partialW(float partOfWidth){
+    public float partialW(float partOfWidth) {
         return w * partOfWidth;
     }
 
-    public float partialH(float partOfHeight){
+    public float partialH(float partOfHeight) {
         return h * partOfHeight;
     }
 }

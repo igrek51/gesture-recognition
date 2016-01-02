@@ -67,13 +67,14 @@ public class Config {
     //  GESTY
     public static class Gestures {
         public static final int max_wait_time = 500; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
-        public static final float plot_height = 0.5f;
-        public static final float plot_x_scale = 0.5f;
+        public static final float plot_height = 0.4f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int normalize_x_samples = 128;
         public static class FreemanChains {
             public static final int directions = 8;
         }
+        //metoda porównywania histogramów:
+        //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
         public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
     }
     //  USTAWIENIA UŻYTKOWNIKA
