@@ -8,12 +8,6 @@ import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 
 public class Output {
-    public static class SoftErrorException extends Exception {
-        public SoftErrorException(String e) {
-            super(e);
-        }
-    }
-
     public static void reset() {
         echos = "";
     }

@@ -4,15 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 
 import igrek.touchinterface.gestures.FreemanHistogram;
+import igrek.touchinterface.gestures.GestureManager;
 import igrek.touchinterface.gestures.SingleGesture;
 import igrek.touchinterface.gestures.Track;
 import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.graphics.Buttons.*;
 import igrek.touchinterface.managers.*;
 import igrek.touchinterface.managers.files.Files;
-import igrek.touchinterface.managers.files.Path;
 import igrek.touchinterface.settings.*;
 import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.SoftErrorException;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
@@ -21,11 +22,12 @@ import org.opencv.android.OpenCVLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył
+//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył, analiza nierozpoznanych ostatnich gestów, minimalny współczynnik korelacji
 //TODO: zapis do pliku
 //TODO: wybór lokalizacji bazy danych
 // /storage/extSdCard/Android/data/igrek.touchinterface/samples
 //TODO: wykorzystanie z OpenCV: filtracja szumów, generowanie pełnego konturu, obliczanie łańcuchów freemana, korelacja histogramów
+
 public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel {
     boolean init = false;
     boolean running = true;
@@ -36,15 +38,16 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     public Buttons buttons;
     TouchPanel touchpanel = null;
     Control control = null;
-    Files files;
+    public Files files;
     public Preferences preferences;
     public InputManager inputmanager = null;
+    public GestureManager gestureManager = null;
     private BaseLoaderCallback mLoaderCallback;
 
-    public Track track1 = null;
-    public List<Track> tracks;
-    public FreemanHistogram fHistogram = null;
-    public SingleGesture singleGesture = null;
+    public Track currentTrack = null;
+    public List<Track> lastTracks;
+    public FreemanHistogram currentHistogram = null;
+    public SingleGesture currentGesture = null;
 
     public Engine(Activity activity) {
         this.activity = activity;
@@ -91,7 +94,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
                 Output.reset();
             }
         });
-        buttons.add("Zakończ", "exit", graphics.w / 2, 0, graphics.w / 2, 0, new ButtonActionListener() {
+        buttons.add("Zakończ", "exit", buttons.lastXRight(), 0, graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
                 control.executeEvent(Types.ControlEvent.BACK);
             }
@@ -101,13 +104,24 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
                 clickedPathPreferences();
             }
         });
-        buttons.add("Zapisz wzorzec", "saveSample", 0, buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
+        buttons.add("Zapisz wzorzec", "saveSample", buttons.lastXRight(), buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
             public void clicked() throws Exception {
                 saveCurrentSample();
             }
         });
+        buttons.add("Lista wzorców", "listSamples", 0, buttons.lastYBottom(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+                gestureManager.listSamples();
+            }
+        });
+        buttons.add("Rozpoznaj", "recognizeSample", buttons.lastXRight(), buttons.lastYTop(), graphics.w / 2, 0, new ButtonActionListener() {
+            public void clicked() throws Exception {
+                gestureManager.recognizeSample(currentGesture);
+            }
+        });
         preferencesLoad();
-        tracks = new ArrayList<>();
+        lastTracks = new ArrayList<>();
+        gestureManager = new GestureManager();
         try {
             setAppMode(Types.AppMode.MENU);
         } catch (Exception e) {
@@ -141,6 +155,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     public void quit() {
+        Output.info("Zamykanie...");
         if (!running) { //próba ponownego zamknięcia
             Output.log("Zamykanie aplikacji (2) - anulowanie");
             return;
@@ -158,7 +173,7 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
             //obsługa przycisków
             buttons.executeClicked();
             //zdejmowanie gestu po braku aktywności
-            if (track1 != null) {
+            if (currentTrack != null) {
                 if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
                     addNewTrack();
                 }
@@ -239,18 +254,20 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
             buttons.setVisible("clear");
             buttons.setVisible("samplesPath");
             buttons.setVisible("saveSample");
+            buttons.setVisible("listSamples");
+            buttons.setVisible("recognizeSample");
         }
     }
 
     public void addNewTrack() {
-        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(track1));
-        tracks.add(track1);
-        while (tracks.size() > 4) {
-            tracks.remove(0);
+        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(currentTrack));
+        lastTracks.add(currentTrack);
+        while (lastTracks.size() > 4) {
+            lastTracks.remove(0);
         }
-        fHistogram = new FreemanHistogram(filteredTrack);
-        singleGesture = new SingleGesture(track1.getStart(), fHistogram);
-        track1 = null;
+        currentHistogram = new FreemanHistogram(filteredTrack);
+        currentGesture = new SingleGesture(currentTrack.getStart(), currentHistogram);
+        currentTrack = null;
     }
 
     public void clickedPathPreferences() {
@@ -280,25 +297,21 @@ public class Engine implements TimerManager.MasterOfTime, CanvasView.TouchPanel 
     }
 
     public void saveCurrentSample() {
-        if (fHistogram == null || fHistogram.histogram == null || singleGesture == null) {
+        if (currentHistogram == null || currentHistogram.histogram == null || currentGesture == null) {
             Output.error("Brak histogramu do zapisania");
             return;
         }
         inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputManager.InputHandlerCancellable() {
             @Override
             public void onAccept(String inputText) {
-                saveCurrentSample2(inputText);
+                try {
+                    gestureManager.saveSample(currentGesture, inputText);
+                } catch (SoftErrorException e) {
+                    Output.error(e);
+                }
             }
         });
     }
 
-    public void saveCurrentSample2(String character) {
-        Path samplesPath2 = files.pathSD().append(app.samplesPath);
-        //wyznaczanie nazwy pliku
-        int sampleNumber = 1;
-        while (files.exists(samplesPath2.append(character + "-" + sampleNumber).toString())) {
-            sampleNumber++;
-        }
-        //serializacja wzorca i zapisanie histogramu
-    }
+
 }

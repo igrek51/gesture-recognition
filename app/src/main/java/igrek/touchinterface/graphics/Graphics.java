@@ -94,12 +94,12 @@ public class Graphics extends CanvasView {
     }
 
     private void drawTrack() {
-        if (engine.track1 != null) {
+        if (engine.currentTrack != null) {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1);
             setColor(0xffffff);
             Point last = null;
-            for (Point p : engine.track1.getPoints()) {
+            for (Point p : engine.currentTrack.getPoints()) {
                 if (last != null) {
                     drawLine(last.x, last.y, p.x, p.y);
                 }
@@ -107,7 +107,7 @@ public class Graphics extends CanvasView {
             }
             paint.setStrokeWidth(0);
             setColor(0x00a000);
-            drawText("Liczba punktów: " + engine.track1.getPoints().size(), 0, h, Types.Align.BOTTOM_LEFT);
+            drawText("Liczba punktów: " + engine.currentTrack.getPoints().size(), 0, h, Types.Align.BOTTOM_LEFT);
         }
     }
 
@@ -126,16 +126,16 @@ public class Graphics extends CanvasView {
     private void drawMiniTracks() {
         setColor(0xa0a0a0);
         for (int i = 1; i <= 4; i++) {
-            if (engine.tracks.size() - i >= 0) {
-                Track track = engine.tracks.get(engine.tracks.size() - i);
+            if (engine.lastTracks.size() - i >= 0) {
+                Track track = engine.lastTracks.get(engine.lastTracks.size() - i);
                 drawTrack(track, 0.25f, w - i * w / 4, h * 3 / 4);
             }
         }
     }
 
     private void drawGestureHistogram() {
-        if (engine.fHistogram != null && engine.track1 == null) {
-            if (engine.fHistogram.histogram != null) {
+        if (engine.currentHistogram != null && engine.currentTrack == null) {
+            if (engine.currentHistogram.histogram != null) {
                 float hr2 = h * Config.Gestures.plot_height / 2;
                 //układ współrzędnych
                 setColor(0x0000a0);
@@ -143,10 +143,10 @@ public class Graphics extends CanvasView {
                 drawLine(1, h / 2 - hr2, 1, h / 2 + hr2); //Y
                 //wykres
                 setColor(0x00a0a0);
-                for (int i = 0; i < engine.fHistogram.size(); i++) {
-                    float left = w * i / engine.fHistogram.size() + 1;
-                    float right = w * (i+1) / engine.fHistogram.size() - 1;
-                    float top = h / 2 + hr2 - engine.fHistogram.histogram[i] * h * Config.Gestures.plot_height;
+                for (int i = 0; i < engine.currentHistogram.size(); i++) {
+                    float left = w * i / engine.currentHistogram.size() + 1;
+                    float right = w * (i+1) / engine.currentHistogram.size() - 1;
+                    float top = h / 2 + hr2 - engine.currentHistogram.histogram[i] * h * Config.Gestures.plot_height;
                     fillRect(left, top, right, h / 2 + hr2);
                 }
             }

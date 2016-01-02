@@ -43,8 +43,6 @@ public class Control {
         if (event == Types.ControlEvent.BACK){
             if(app.mode == Types.AppMode.MENU){
                 engine.quit();
-            }else if(app.mode == Types.AppMode.COMPASS){
-                engine.setAppMode(Types.AppMode.MENU);
             }
         }
 

@@ -37,18 +37,18 @@ public class TouchPanel {
         start_x = touch_x;
         start_y = touch_y;
 
-        if(engine.track1 != null) {
+        if(engine.currentTrack != null) {
             engine.addNewTrack();
         }
         app.gesture_edit_time = System.currentTimeMillis();
-        engine.track1 = new Track();
-        engine.track1.addPoint(touch_x, touch_y);
+        engine.currentTrack = new Track();
+        engine.currentTrack.addPoint(touch_x, touch_y);
         return true;
     }
 
     public boolean touchMove(float touch_x, float touch_y) {
-        if(engine.track1 != null) {
-            engine.track1.addPoint(touch_x, touch_y);
+        if(engine.currentTrack != null) {
+            engine.currentTrack.addPoint(touch_x, touch_y);
         }
         app.gesture_edit_time = System.currentTimeMillis();
         return false;

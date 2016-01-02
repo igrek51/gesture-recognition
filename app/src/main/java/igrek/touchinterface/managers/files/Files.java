@@ -11,30 +11,24 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Files {
     Activity activity;
+    private String pathToExtSD;
 
     public Files(Activity activity) {
         this.activity = activity;
+        pathSDInit();
     }
 
-    public Path pathSD(){
-        return new Path(Environment.getExternalStorageDirectory().toString());
-    }
-
-    public String pathSD(String path) {
-        if (path.length() == 0 || path.charAt(0) != '/') {
-            path = "/" + path;
+    private void pathSDInit(){
+        pathToExtSD = "/storage/extSdCard";
+        if(!exists(pathToExtSD)){
+            pathToExtSD = Environment.getExternalStorageDirectory().toString();
         }
-        return Environment.getExternalStorageDirectory().toString() + path;
     }
 
-    public String path(String dir, String filename) {
-        if (dir.length() == 0 || dir.charAt(dir.length() - 1) != '/') {
-            dir += "/";
-        }
-        return dir + filename;
+    public Path pathSD() {
+        return new Path(pathToExtSD);
     }
 
     public String internalAppDirectory() {
@@ -49,6 +43,10 @@ public class Files {
             lista.add(aFile.getName());
         }
         return lista;
+    }
+
+    public List<String> listDir(Path path) {
+        return listDir(path.toString());
     }
 
     public byte[] openFile(String filename) throws IOException {
@@ -93,4 +91,14 @@ public class Files {
         File f = new File(path);
         return f.exists();
     }
+
+    public boolean delete(String path){
+        File file = new File(path);
+        return file.delete();
+    }
+
+    public boolean delete(Path path){
+        return delete(path.toString());
+    }
+
 }

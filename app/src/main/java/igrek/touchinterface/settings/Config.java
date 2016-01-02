@@ -2,6 +2,8 @@ package igrek.touchinterface.settings;
 
 import android.view.WindowManager;
 
+import org.opencv.imgproc.Imgproc;
+
 public class Config {
     //STAŁE
     //  OUTPUT
@@ -72,6 +74,7 @@ public class Config {
         public static class FreemanChains {
             public static final int directions = 8;
         }
+        public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
     }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
