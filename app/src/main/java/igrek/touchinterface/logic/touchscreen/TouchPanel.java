@@ -6,18 +6,18 @@ import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
 
 public class TouchPanel {
-    int w, h; //rozmiary ekranu dotykowego
+    float w, h; //rozmiary ekranu dotykowego
     float start_x, start_y; //punkt początkowy smyrania
     int dpi;
     public static final float INCH = 2.54f; //1 cal [cm]
     App app;
     Engine engine;
 
-    public TouchPanel(int w, int h) {
-        this.w = w;
-        this.h = h;
+    public TouchPanel() {
         app = App.geti();
         engine = app.engine;
+        w = app.engine.graphics.w;
+        h = app.engine.graphics.w;
         dpi = engine.activity.getResources().getDisplayMetrics().densityDpi;
         Output.log("DPI urządzenia: " + dpi);
     }
@@ -33,7 +33,6 @@ public class TouchPanel {
     public boolean touchDown(float touch_x, float touch_y) {
         start_x = touch_x;
         start_y = touch_y;
-
         if(engine.currentTrack != null) {
             engine.addNewTrack();
         }
@@ -52,8 +51,6 @@ public class TouchPanel {
     }
 
     public boolean touchUp(float touch_x, float touch_y) {
-        float rtx = touch_x / w;
-        float rty = touch_y / h;
         return false;
     }
 }

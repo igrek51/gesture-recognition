@@ -133,7 +133,7 @@ public class GestureManager {
 
     public double correlationStartPoint(Point p1, Point p2) {
         double d = p1.distanceTo(p2);
-        double rd = d / (app.w < app.h ? app.w : app.h);
+        double rd = d / app.engine.graphics.getMinScreenSize();
         if (rd < Config.Gestures.Correlation.start_point_r1) return 1;
         if (rd > Config.Gestures.Correlation.start_point_r2) return 0;
         //interpolacja liniowa

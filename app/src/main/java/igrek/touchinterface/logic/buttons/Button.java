@@ -4,26 +4,27 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.buttons.geometry.Geometry;
 import igrek.touchinterface.settings.Config;
 
 public class Button {
-    public float x, y;
-    public float w, h;
-    public String text, id;
+    //wynikowe bezwzględne współrzędne
+    public float x = 0, y = 0, w = 0, h = 0;
+    //źródłowa geometria dla buttonu
+    private Geometry geo = null;
+    private int align = Types.Align.DEFAULT;
+    public String text;
+    public ButtonsManager.ButtonId id;
     public int clicked = 0; //0 - nie wciśnięty, 1 - przyciśnięty (nie puszczony), 2 - wciśnięty i puszczony (kliknięty)
     public ButtonActionListener actionListener;
 
-    public Button(String text, String id, float x, float y, float w, float h, ButtonActionListener actionListener) {
+    public Button(String text, ButtonsManager.ButtonId id, ButtonActionListener actionListener) {
         this.text = text;
         this.id = id;
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
         this.actionListener = actionListener;
     }
 
-    public Button setPos(float x, float y, float w, float h, int align) {
+    public void setGeometry(float x, float y, float w, float h, int align) {
         //rozmiar
         this.w = w;
         if (h == 0) h = Config.Buttons.height; //domyślna wysokość
@@ -58,7 +59,18 @@ public class Button {
         } else { //bottom
             this.y = y - this.h;
         }
-        return this;
+    }
+
+    public void setGeometry(Geometry geo, int align) {
+        this.geo = geo;
+        this.align = align;
+        setGeometry(geo.getX(), geo.getY(), geo.getW(), geo.getH(), align);
+    }
+
+    public void resetGeometry() {
+        if (geo != null) {
+            setGeometry(geo.getX(), geo.getY(), geo.getW(), geo.getH(), align);
+        }
     }
 
     public boolean isInRect(float touch_x, float touch_y) {

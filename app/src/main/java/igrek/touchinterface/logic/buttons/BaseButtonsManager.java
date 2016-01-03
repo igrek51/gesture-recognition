@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.buttons.geometry.Geometry;
 import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
@@ -20,24 +21,24 @@ public abstract class BaseButtonsManager {
         buttons = new ArrayList<>();
     }
 
-    public Button add(String text, String id, float x, float y, float w, float h, int align, ButtonActionListener actionListener) {
-        Button b = new Button(text, id, x, y, w, h, actionListener);
-        b.setPos(x, y, w, h, align);
+    public Button add(String text, ButtonsManager.ButtonId id, Geometry geo, int align, ButtonActionListener actionListener) {
+        Button b = new Button(text, id, actionListener);
+        b.setGeometry(geo, align);
         buttons.add(b);
         return b;
     }
 
-    public Button add(String text, String id, float x, float y, float w, float h, ButtonActionListener actionListener) {
-        return add(text, id, x, y, w, h, Types.Align.DEFAULT, actionListener);
+    public Button add(String text, ButtonsManager.ButtonId id, Geometry geo, ButtonActionListener actionListener) {
+        return add(text, id, geo, Types.Align.DEFAULT, actionListener);
     }
 
     public boolean isButtonVisible(Button b){
         return true;
     }
 
-    public Button find(String id) throws SoftErrorException {
+    public Button get(ButtonsManager.ButtonId id) throws SoftErrorException {
         for (Button b : buttons) {
-            if (b.id.equals(id)) return b;
+            if (b.id == id) return b;
         }
         Output.errorThrow("Nie znaleziono przycisku o nazwie: " + id);
         return null;
@@ -89,7 +90,39 @@ public abstract class BaseButtonsManager {
         }
     }
 
-    public float lastYTop() {
+    public void resetAllButtonsGeometry(){
+        for (Button b : buttons) {
+            b.resetGeometry();
+        }
+    }
+
+
+    public float lastLeft() {
+        if (buttons.size() == 0) {
+            Output.error("Brak buttonów na liście.");
+            return 0;
+        }
+        return buttons.get(buttons.size() - 1).x;
+    }
+
+    public float lastLeftRelative() {
+        return lastLeft() / app.w();
+    }
+
+    public float lastRight() {
+        if (buttons.size() == 0) {
+            Output.error("Brak buttonów na liście.");
+            return 0;
+        }
+        Button last = buttons.get(buttons.size() - 1);
+        return last.x + last.w;
+    }
+
+    public float lastRightRelative() {
+        return lastRight() / app.w();
+    }
+
+    public float lastTop() {
         if (buttons.size() == 0) {
             Output.error("Brak buttonów na liście.");
             return 0;
@@ -97,7 +130,11 @@ public abstract class BaseButtonsManager {
         return buttons.get(buttons.size() - 1).y;
     }
 
-    public float lastYBottom() {
+    public float lastTopRelative() {
+        return lastTop() / app.h();
+    }
+
+    public float lastBottom() {
         if (buttons.size() == 0) {
             Output.error("Brak buttonów na liście.");
             return 0;
@@ -106,20 +143,7 @@ public abstract class BaseButtonsManager {
         return last.y + last.h;
     }
 
-    public float lastXLeft() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        return buttons.get(buttons.size() - 1).x;
-    }
-
-    public float lastXRight() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        Button last = buttons.get(buttons.size() - 1);
-        return last.x + last.w;
+    public float lastBottomRelative() {
+        return lastBottom() / app.h();
     }
 }

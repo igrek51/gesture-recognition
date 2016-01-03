@@ -16,8 +16,10 @@ import java.util.List;
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 
+//TODO: włączenie antialiasingu, rysowania na floatach w niektórych urządzeniach
+
 public abstract class CanvasView extends View {
-    public int w, h;
+    public float w, h;
     ITouchScreenController touchController;
     Paint paint;
     private Canvas canvas = null;
@@ -29,7 +31,6 @@ public abstract class CanvasView extends View {
         paint = new Paint();
     }
 
-    //odrysowanie ekranu
     public abstract void repaint();
 
     @Override
@@ -65,7 +66,11 @@ public abstract class CanvasView extends View {
         return true;
     }
 
-    //pomocnicze funkcje rysujące
+    public float getMinScreenSize(){
+        return w < h ? w : h;
+    }
+
+    //  Pomocnicze funkcje rysujące
 
     public void drawText(String text, float cx, float cy, int align) {
         //domyślne wartości

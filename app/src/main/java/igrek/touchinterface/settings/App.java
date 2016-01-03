@@ -27,9 +27,15 @@ public class App {
 
     public Engine engine;
 
-    //rozmiar ekranu
-    public int w = 0;
-    public int h = 0;
+    //  Rozmiar ekranu
+    public float w() {
+        return engine.graphics.w;
+    }
+
+    public float h() {
+        return engine.graphics.h;
+    }
+
     //  ZMIENNE APLIKACJI
     public Types.AppMode mode = Types.AppMode.MENU;
     public long gesture_edit_time = 0;

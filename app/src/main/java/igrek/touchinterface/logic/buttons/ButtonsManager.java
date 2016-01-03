@@ -1,6 +1,7 @@
 package igrek.touchinterface.logic.buttons;
 
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.buttons.geometry.RelativeGeometry;
 import igrek.touchinterface.system.output.Output;
 
 public class ButtonsManager extends BaseButtonsManager {
@@ -9,41 +10,44 @@ public class ButtonsManager extends BaseButtonsManager {
         initButtons();
     }
 
+    public enum ButtonId {
+        CLEAR_CONSOLE, EXIT,
+        SAMPLES_PATH, SAVE_SAMPLE, LIST_SAMPLES, RECOGNIZE_SAMPLE, DELETE_SAMPLE
+    }
+
     public void initButtons(){
-        int w = app.w;
-        int h = app.h;
-        //TODO: rozmiary buttonów w module grafiki lub realtywne wielkości
-        add("Czyść konsolę", "clear", 0, 0, w / 2, 0, new ButtonActionListener() {
+        //TODO: id buttonów nie jako string
+        add("Czyść konsolę", ButtonId.CLEAR_CONSOLE, new RelativeGeometry(0, 0, 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 Output.reset();
             }
         });
-        add("Zakończ", "exit", lastXRight(), 0, w / 2, 0, new ButtonActionListener() {
+        add("Zakończ", ButtonId.EXIT, new RelativeGeometry(lastRightRelative(), 0, 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.quit();
             }
         });
-        add("Lokalizacja wzorców", "samplesPath", 0, lastYBottom(), w / 2, 0, new ButtonActionListener() {
+        add("Lokalizacja wzorców", ButtonId.SAMPLES_PATH, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.clickedPathPreferences();
             }
         });
-        add("Zapisz wzorzec", "saveSample", lastXRight(), lastYTop(), w / 2, 0, new ButtonActionListener() {
+        add("Zapisz wzorzec", ButtonId.SAVE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.saveCurrentSample();
             }
         });
-        add("Lista wzorców", "listSamples", 0, lastYBottom(), w / 2, 0, new ButtonActionListener() {
+        add("Lista wzorców", ButtonId.LIST_SAMPLES, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.gestureManager.listSamples();
             }
         });
-        add("Rozpoznaj", "recognizeSample", lastXRight(), lastYTop(), w / 2, 0, new ButtonActionListener() {
+        add("Rozpoznaj", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.gestureManager.recognizeSample(engine.currentGesture);
             }
         });
-        add("Usuń wzorzec", "deleteSample", 0, lastYBottom(), w / 2, 0, new ButtonActionListener() {
+        add("Usuń wzorzec", ButtonId.DELETE_SAMPLE, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.deleteSample();
             }
@@ -52,15 +56,15 @@ public class ButtonsManager extends BaseButtonsManager {
 
     @Override
     public boolean isButtonVisible(Button b){
-        String bid = b.id;
+        ButtonId bid = b.id;
         if (app.mode == Types.AppMode.MENU) {
-            if(bid.equals("exit")) return true;
-            if(bid.equals("clear")) return true;
-            if(bid.equals("samplesPath")) return true;
-            if(bid.equals("saveSample")) return true;
-            if(bid.equals("listSamples")) return true;
-            if(bid.equals("recognizeSample")) return true;
-            if(bid.equals("deleteSample")) return true;
+            if(bid == ButtonId.EXIT) return true;
+            if(bid == ButtonId.CLEAR_CONSOLE) return true;
+            if(bid == ButtonId.SAMPLES_PATH) return true;
+            if(bid == ButtonId.SAVE_SAMPLE) return true;
+            if(bid == ButtonId.LIST_SAMPLES) return true;
+            if(bid == ButtonId.RECOGNIZE_SAMPLE) return true;
+            if(bid == ButtonId.DELETE_SAMPLE) return true;
         }
         return false;
     }
