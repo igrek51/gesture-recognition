@@ -87,7 +87,7 @@ public class GestureManager {
                 return;
             }
         }
-        Output.errorThrow("Nie znaleziono wzorca: "+filename);
+        Output.errorThrow("Nie znaleziono wzorca: " + filename);
     }
 
     public void saveSample(SingleGesture gesture, String character) throws SoftErrorException {
@@ -117,6 +117,15 @@ public class GestureManager {
         }
     }
 
+    public double startPointCorrelation(Point p1, Point p2){
+        double d = p1.distanceTo(p2);
+        double rd = d / (app.w < app.h ? app.w : app.h);
+        if(rd < Config.Gestures.Correlation.start_point_r1) return 1;
+        if(rd > Config.Gestures.Correlation.start_point_r2) return 0;
+        //interpolacja liniowa
+        return (Config.Gestures.Correlation.start_point_r2 - rd) / (Config.Gestures.Correlation.start_point_r2 - Config.Gestures.Correlation.start_point_r1);
+    }
+
     public double singleGesturesCcorrelation(SingleGesture sg1, SingleGesture sg2) {
         Mat hist1 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
         Mat hist2 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
@@ -124,7 +133,9 @@ public class GestureManager {
             hist1.put(i, 0, sg1.getHistogram(i));
             hist2.put(i, 0, sg2.getHistogram(i));
         }
-        return Imgproc.compareHist(hist1, hist2, Config.Gestures.histogram_compare_method);
+        double correl_hist = Imgproc.compareHist(hist1, hist2, Config.Gestures.Correlation.histogram_compare_method);
+        double correl_start_point = startPointCorrelation(sg1.getStart(), sg2.getStart());
+        return correl_hist * correl_start_point;
     }
 
     public void recognizeSample(SingleGesture gesture) {

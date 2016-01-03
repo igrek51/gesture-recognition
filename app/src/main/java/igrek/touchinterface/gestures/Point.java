@@ -19,4 +19,8 @@ public class Point implements Serializable {
     public String toString() {
         return "x = " + x + ", y = " + y;
     }
+
+    public float distanceTo(Point p2) {
+        return (float)Math.hypot(p2.x - this.x, p2.y - this.y);
+    }
 }

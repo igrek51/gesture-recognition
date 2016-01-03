@@ -73,9 +73,13 @@ public class Config {
         public static class FreemanChains {
             public static final int directions = 8;
         }
-        //metoda porównywania histogramów:
-        //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
-        public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
+        public static class Correlation {
+            //metoda porównywania histogramów:
+            //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
+            public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
+            public static final float start_point_r1 = 0.25f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
+            public static final float start_point_r2 = 0.5f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
+        }
     }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
