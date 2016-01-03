@@ -78,7 +78,7 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
     public void init() {
         //po inicjalizacji grafiki - po ustaleniu rozmiarów
         Output.log("Inicjalizacja (po starcie grafiki).");
-        touchpanel = new TouchPanel(graphics.w, graphics.h);
+        touchpanel = new TouchPanel();
         inputmanager = new InputManager(activity, graphics);
         buttonsManager = new ButtonsManager();
         preferences.preferencesLoad();
@@ -171,9 +171,8 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
 
     @Override
     public void resizeEvent() {
-        app.w = graphics.w;
-        app.h = graphics.h;
         if (!init) init();
+        buttonsManager.resetAllButtonsGeometry();
         Output.log("Rozmiar ekranu zmieniony na: " + graphics.w + "px x " + graphics.h + "px");
     }
 
