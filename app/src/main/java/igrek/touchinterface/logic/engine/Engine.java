@@ -14,6 +14,14 @@ import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 import igrek.touchinterface.settings.Config;
 
+
+//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył, analiza nierozpoznanych ostatnich gestów, minimalny współczynnik korelacji
+//TODO: wykorzystanie z OpenCV: filtracja szumów, generowanie pełnego konturu, obliczanie łańcuchów freemana, korelacja histogramów
+//TODO: inteligencja: usuwanie wzorców, które prowadzą do błędnego rozpoznawania
+//TODO: uczenie: dodawanie wszystkich wzorców, usuwanie wzorców, które są rzadko podstawą do rozpoznania
+//TODO: mechanizm usuwania złych wzorców
+//TODO: klasa engine do zarządzania logiką na wyższym poziomie
+
 public class Engine extends BaseEngine {
     public Engine(AppCompatActivity activity){
         super(activity);

@@ -14,7 +14,6 @@ import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 import igrek.touchinterface.logic.touchscreen.TouchPanel;
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.settings.preferences.BasePreferences;
 import igrek.touchinterface.settings.preferences.Preferences;
 import igrek.touchinterface.system.files.Files;
 import igrek.touchinterface.system.keyinput.InputManager;
@@ -28,15 +27,6 @@ import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
 import java.util.List;
-
-//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył, analiza nierozpoznanych ostatnich gestów, minimalny współczynnik korelacji
-//TODO: zapis do pliku
-//TODO: wybór lokalizacji bazy danych
-// /storage/extSdCard/Android/data/igrek.touchinterface/samples
-//TODO: wykorzystanie z OpenCV: filtracja szumów, generowanie pełnego konturu, obliczanie łańcuchów freemana, korelacja histogramów
-//TODO: inteligencja: usuwanie wzorców, które prowadzą do błędnego rozpoznawania
-//TODO: uczenie: dodawanie wszystkich wzorców, usuwanie wzorców, które są rzadko podstawą do rozpoznania
-//TODO: klasa engine do zarządzania logiką na wyższym poziomie
 
 public abstract class BaseEngine implements ITimerRunner, ITouchScreenController {
     boolean init = false;

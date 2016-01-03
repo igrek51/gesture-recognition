@@ -35,31 +35,33 @@ public class GestureManager {
         return app.engine.files.pathSD().append(app.samplesPath);
     }
 
+    public SingleGesture loadSample(String filename) throws Exception {
+        FileInputStream fileIn = new FileInputStream(filename);
+        ObjectInputStream in = new ObjectInputStream(fileIn);
+        SingleGesture gesture = (SingleGesture) in.readObject();
+        in.close();
+        fileIn.close();
+        return gesture;
+    }
+
     public void loadSamples() {
         samples = new ArrayList<>();
         Path samplesPath2 = getSamplesPath();
         List<String> samplesFiles = app.engine.files.listDir(samplesPath2);
         for (String sampleFile : samplesFiles) {
             String filename = samplesPath2.append(sampleFile).toString();
-            SingleGesture gesture;
             try {
-                FileInputStream fileIn = new FileInputStream(filename);
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                gesture = (SingleGesture) in.readObject();
-                in.close();
-                fileIn.close();
+                SingleGesture gesture = loadSample(filename);
                 samples.add(gesture);
-            }catch (IOException e) {
+            } catch (Exception e) {
                 Output.error("Błąd przy deserializacji z pliku: " + filename);
                 Output.error(e);
-            } catch (ClassNotFoundException c) {
-                Output.error("SingleGesture class not found");
             }
         }
         Output.info("Załadowano wzorce: " + samples.size());
     }
 
-    public void sortSamples(){
+    public void sortSamples() {
         Collections.sort(samples);
     }
 
@@ -83,8 +85,8 @@ public class GestureManager {
     }
 
     public void deleteSample(String filename) throws SoftErrorException {
-        for(SingleGesture sample : samples){
-            if(sample.getFilename().equals(filename)){
+        for (SingleGesture sample : samples) {
+            if (sample.getFilename().equals(filename)) {
                 deleteSample(sample);
                 return;
             }
@@ -119,7 +121,7 @@ public class GestureManager {
         }
     }
 
-    public double correlationHist(SingleGesture sg1, SingleGesture sg2){
+    public double correlationHist(SingleGesture sg1, SingleGesture sg2) {
         Mat hist1 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
         Mat hist2 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
         for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
@@ -129,11 +131,11 @@ public class GestureManager {
         return Imgproc.compareHist(hist1, hist2, Config.Gestures.Correlation.histogram_compare_method);
     }
 
-    public double correlationStartPoint(Point p1, Point p2){
+    public double correlationStartPoint(Point p1, Point p2) {
         double d = p1.distanceTo(p2);
         double rd = d / (app.w < app.h ? app.w : app.h);
-        if(rd < Config.Gestures.Correlation.start_point_r1) return 1;
-        if(rd > Config.Gestures.Correlation.start_point_r2) return 0;
+        if (rd < Config.Gestures.Correlation.start_point_r1) return 1;
+        if (rd > Config.Gestures.Correlation.start_point_r2) return 0;
         //interpolacja liniowa
         return (Config.Gestures.Correlation.start_point_r2 - rd) / (Config.Gestures.Correlation.start_point_r2 - Config.Gestures.Correlation.start_point_r1);
     }
@@ -165,9 +167,10 @@ public class GestureManager {
             }
             //Output.info("Wzorzec: "+sg.getFilename()+", korelacja: "+correl);
         }
-        if(g_max == null) {
+        if (g_max == null) {
             Output.errorThrow("Brak najlepszego dopasowania do wzorca");
         }
-        Output.info("Najlepszy wzorzec: "+g_max.getCharacter()+", "+g_max.getFilename()+", korelacja: "+correl_max+" (correl_hist="+correl_hist+", correl_start_point="+correl_start_point+")");
+        Output.info("Najlepszy wzorzec: " + g_max.getCharacter() + ", " + g_max.getFilename() + ", korelacja: " + correl_max);
+        Output.info("(c_hist=" + correl_hist + ", c_sp=" + correl_start_point + ")");
     }
 }

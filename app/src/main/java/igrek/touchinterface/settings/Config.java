@@ -61,7 +61,7 @@ public class Config {
             //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
             public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
             public static final float start_point_r1 = 0.35f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
-            public static final float start_point_r2 = 0.7f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
+            public static final float start_point_r2 = 0.85f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

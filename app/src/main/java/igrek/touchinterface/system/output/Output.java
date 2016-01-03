@@ -17,6 +17,10 @@ public class Output {
         Log.i(Config.Output.logTag, l);
     }
 
+    public static void logError(String l) {
+        Log.e(Config.Output.logTag, l);
+    }
+
     public static void log(String l, int i) {
         log(l + " = " + i);
     }
@@ -28,7 +32,7 @@ public class Output {
     //  ERRORS, EXCEPTIONS
     public static void error(String e) {
         echoMultiline("[ERROR] " + e);
-        log("[ERROR] " + e);
+        logError("[ERROR] " + e);
     }
 
     public static void error(Exception ex) {
@@ -37,7 +41,7 @@ public class Output {
         } else {
             echoMultiline("[" + ex.getClass().getName() + "] " + ex.getMessage());
         }
-        log("[EXCEPTION - " + ex.getClass().getName() + "] " + ex.getMessage());
+        logError("[EXCEPTION - " + ex.getClass().getName() + "] " + ex.getMessage());
         if(Config.Output.show_exceptions_trace){
             ex.printStackTrace();
         }
@@ -64,7 +68,7 @@ public class Output {
         });
         dlgAlert.setCancelable(false);
         dlgAlert.create().show();
-        log("[CRITICAL ERROR] " + e);
+        logError("[CRITICAL ERROR] " + e);
         throw new Exception(e);
     }
 
