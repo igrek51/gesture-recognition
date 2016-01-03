@@ -1,13 +1,15 @@
-package igrek.touchinterface.settings;
+package igrek.touchinterface.settings.preferences;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class Preferences {
+import igrek.touchinterface.settings.Config;
+
+public class BasePreferences {
     SharedPreferences settings;
 
-    public Preferences(Activity activity) {
+    public BasePreferences(Activity activity) {
         settings = activity.getApplicationContext().getSharedPreferences(Config.shared_preferences_name, Context.MODE_PRIVATE);
     }
 

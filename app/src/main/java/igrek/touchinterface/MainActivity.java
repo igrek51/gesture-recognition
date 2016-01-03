@@ -8,29 +8,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
 
-import igrek.touchinterface.logic.Engine;
-import igrek.touchinterface.settings.Config;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.logic.engine.Engine;
+import igrek.touchinterface.system.output.Output;
 
 public class MainActivity extends AppCompatActivity {
-    private Engine engine = null;
+    private Engine engine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //schowanie paska tytułu
-        if (Config.hide_taskbar) {
-            if (getSupportActionBar() != null) {
-                getSupportActionBar().hide();
-            }
-        }
-        //fullscreen
-        if (Config.fullscreen) {
-            getWindow().setFlags(Config.fullscreen_flag, Config.fullscreen_flag);
-        }
-        if (Config.keep_screen_on) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
         engine = new Engine(this);
     }
 
@@ -66,14 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        //event obsłużony lub przekazany dalej
         return engine.optionsSelect(item.getItemId()) || super.onOptionsItemSelected(item);
     }
 
@@ -91,9 +75,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
+        /*
+        //przechwycenie klawisza menu
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            return true; //przechwycenie klawisza menu
+            return true;
         }
+        */
         return super.onKeyDown(keyCode, event);
     }
 }

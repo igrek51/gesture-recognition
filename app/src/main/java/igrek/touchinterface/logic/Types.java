@@ -34,23 +34,7 @@ public class Types {
         public static final int FONT_BOLD = 0x20;
     }
 
-    public class Direction {
-        public static final int RIGHT = 0;
-        public static final int UP = 1;
-        public static final int LEFT = 2;
-        public static final int DOWN = 3;
-    }
-
-    public enum ControlEvent {
-        LEFT, RIGHT, UP, DOWN, OK, BACK, MENU
-    }
-
-    public class ControlType {
-        public static final int ABSOLUTE = 0;
-        public static final int RELATIVE = 1;
-    }
-
     public enum AppMode {
-        MENU, COMPASS
+        MENU
     }
 }

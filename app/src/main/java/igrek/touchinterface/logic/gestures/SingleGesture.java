@@ -1,4 +1,4 @@
-package igrek.touchinterface.gestures;
+package igrek.touchinterface.logic.gestures;
 
 import java.io.Serializable;
 

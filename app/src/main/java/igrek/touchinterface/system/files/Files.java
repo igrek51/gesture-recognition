@@ -1,4 +1,4 @@
-package igrek.touchinterface.managers.files;
+package igrek.touchinterface.system.files;
 
 import android.app.Activity;
 import android.os.Environment;
@@ -59,12 +59,12 @@ public class Files {
         return data;
     }
 
-    public String openFileString(String filename) throws Exception {
+    public String openFileString(String filename) throws IOException {
         byte[] bytes = openFile(filename);
         return new String(bytes, "UTF-8");
     }
 
-    public void saveFile(String filename, byte[] data) throws IOException, FileNotFoundException {
+    public void saveFile(String filename, byte[] data) throws IOException {
         File file = new File(filename);
         FileOutputStream fos;
         fos = new FileOutputStream(file);
@@ -73,7 +73,7 @@ public class Files {
         fos.close();
     }
 
-    public void saveFile(String filename, String str) throws IOException, FileNotFoundException {
+    public void saveFile(String filename, String str) throws IOException {
         saveFile(filename, str.getBytes());
     }
 

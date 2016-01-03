@@ -1,4 +1,4 @@
-package igrek.touchinterface.managers.files;
+package igrek.touchinterface.system.files;
 
 public class Path {
     String pathstr;

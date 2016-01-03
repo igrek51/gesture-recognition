@@ -1,10 +1,10 @@
-package igrek.touchinterface.gestures;
+package igrek.touchinterface.logic.gestures;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import igrek.touchinterface.settings.Config;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 public class Track {
     private List<Point> points;

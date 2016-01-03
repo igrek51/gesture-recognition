@@ -1,4 +1,4 @@
-package igrek.touchinterface.system;
+package igrek.touchinterface.system.output;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,23 +25,7 @@ public class Output {
         log(l + " = " + f);
     }
 
-    //  OUTPUT na ekran w jednej linii
-    private static void echoOneline(String e) {
-        if (echos.length() == 0) {
-            for (int i = 0; i < Config.Output.echo_spaces; i++) {
-                echos += ' ';
-            }
-            echos += e;
-        } else {
-            echos = echos + " ::: " + e;
-        }
-    }
-
-    public static void info(String e) {
-        echoMultiline(e);
-        log("[info] " + e);
-    }
-
+    //  ERRORS, EXCEPTIONS
     public static void error(String e) {
         echoMultiline("[ERROR] " + e);
         log("[ERROR] " + e);
@@ -84,12 +68,11 @@ public class Output {
         throw new Exception(e);
     }
 
-    public static String echoShow() {
-        String old_echos = echos;
-        if (echos.length() > 0) {
-            echos = echos.substring(1);
-        }
-        return old_echos;
+    //  INFO, ECHO
+
+    public static void info(String e) {
+        echoMultiline(e);
+        log("[info] " + e);
     }
 
     private static void echoMultiline(String e) {
@@ -101,14 +84,14 @@ public class Output {
         }
     }
 
-    public static void echoTryClear() {
+    public static void echoClear1AfterDelay() {
         if (System.currentTimeMillis() > lastEcho + Config.Output.echo_showtime) {
-            echoClear1();
+            echoClear1Line();
             lastEcho += Config.Output.echo_showtime;
         }
     }
 
-    public static void echoClear1() {
+    public static void echoClear1Line() {
         if (echos.length() == 0) return;
         //usuwa 1 wpis z echo
         int firstIndex = echos.indexOf("\n");

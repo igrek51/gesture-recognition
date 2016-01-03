@@ -1,11 +1,10 @@
 package igrek.touchinterface.settings;
 
-import igrek.touchinterface.logic.Engine;
+import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 public class App {
-    //singleton
     private App() {
         instance = this; //dla pewności
     }

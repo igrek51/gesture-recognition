@@ -3,23 +3,27 @@ package igrek.touchinterface.graphics;
 import android.content.Context;
 import android.graphics.Paint;
 
-import igrek.touchinterface.gestures.Point;
-import igrek.touchinterface.gestures.Track;
-import igrek.touchinterface.logic.Engine;
+import igrek.touchinterface.logic.buttons.Button;
+import igrek.touchinterface.logic.engine.Engine;
+import igrek.touchinterface.logic.gestures.Point;
+import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 
 public class Graphics extends CanvasView {
     private App app;
+    private Engine engine;
     private boolean refresh = true;
     public boolean init = false;
 
-    public Graphics(Context context, Engine engine) {
-        super(context, engine);
+    public Graphics(Context context, ITouchScreenController touchScreenController) {
+        super(context, touchScreenController);
         app = App.geti();
+        engine = app.engine;
     }
 
     public void refresh(){
@@ -59,22 +63,21 @@ public class Graphics extends CanvasView {
     }
 
     private void drawEcho() {
-        setColor(Config.Colors.text);
+        setColor(Config.Colors.echo_text);
         setFont();
-        Output.echoTryClear();
+        Output.echoClear1AfterDelay();
         String splitecho = splitTextMultiline(Output.echos, w);
         drawTextMultiline(splitecho, 0, h, Config.Fonts.lineheight, Types.Align.BOTTOM);
     }
 
     private void drawButtons() {
-        for (Buttons.Button b : engine.buttons.buttons) {
+        for (Button b : engine.buttonsManager.buttons) {
             drawButton(b);
         }
     }
 
-    private void drawButton(Buttons.Button b) {
-        //TODO: widoczność przycisków i rozmiary w module grafiki
-        if (!b.visible) return;
+    private void drawButton(Button b) {
+        if (!engine.buttonsManager.isButtonVisible(b)) return;
         if (b.clicked > 0) {
             setColor(Config.Colors.Buttons.background_clicked, Config.Colors.Buttons.alpha_clicked);
         } else {

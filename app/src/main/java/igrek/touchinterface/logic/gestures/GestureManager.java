@@ -1,4 +1,4 @@
-package igrek.touchinterface.gestures;
+package igrek.touchinterface.logic.gestures;
 
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -13,11 +13,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import igrek.touchinterface.managers.files.Path;
+import igrek.touchinterface.system.files.Path;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
-import igrek.touchinterface.system.Output;
-import igrek.touchinterface.system.SoftErrorException;
+import igrek.touchinterface.system.output.Output;
+import igrek.touchinterface.system.output.SoftErrorException;
+
+//TODO: przegląd wzorców, punktów startu, usuwanie
 
 public class GestureManager {
     public List<SingleGesture> samples;
@@ -47,7 +49,7 @@ public class GestureManager {
                 in.close();
                 fileIn.close();
                 samples.add(gesture);
-            } catch (IOException e) {
+            }catch (IOException e) {
                 Output.error("Błąd przy deserializacji z pliku: " + filename);
                 Output.error(e);
             } catch (ClassNotFoundException c) {
@@ -117,7 +119,17 @@ public class GestureManager {
         }
     }
 
-    public double startPointCorrelation(Point p1, Point p2){
+    public double correlationHist(SingleGesture sg1, SingleGesture sg2){
+        Mat hist1 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
+        Mat hist2 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
+        for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
+            hist1.put(i, 0, sg1.getHistogram(i));
+            hist2.put(i, 0, sg2.getHistogram(i));
+        }
+        return Imgproc.compareHist(hist1, hist2, Config.Gestures.Correlation.histogram_compare_method);
+    }
+
+    public double correlationStartPoint(Point p1, Point p2){
         double d = p1.distanceTo(p2);
         double rd = d / (app.w < app.h ? app.w : app.h);
         if(rd < Config.Gestures.Correlation.start_point_r1) return 1;
@@ -127,41 +139,35 @@ public class GestureManager {
     }
 
     public double singleGesturesCcorrelation(SingleGesture sg1, SingleGesture sg2) {
-        Mat hist1 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
-        Mat hist2 = new Mat(Config.Gestures.FreemanChains.directions, 1, CvType.CV_32FC1);
-        for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
-            hist1.put(i, 0, sg1.getHistogram(i));
-            hist2.put(i, 0, sg2.getHistogram(i));
-        }
-        double correl_hist = Imgproc.compareHist(hist1, hist2, Config.Gestures.Correlation.histogram_compare_method);
-        double correl_start_point = startPointCorrelation(sg1.getStart(), sg2.getStart());
+        double correl_hist = correlationHist(sg1, sg2);
+        double correl_start_point = correlationStartPoint(sg1.getStart(), sg2.getStart());
         return correl_hist * correl_start_point;
     }
 
-    public void recognizeSample(SingleGesture gesture) {
+    public void recognizeSample(SingleGesture gesture) throws SoftErrorException {
         if (gesture == null) {
-            Output.error("Brak gestu do rozpoznania");
-            return;
+            Output.errorThrow("Brak gestu do rozpoznania");
         }
         if (samples.isEmpty()) {
-            Output.error("Brak wzorców");
-            return;
+            Output.errorThrow("Brak wzorców");
         }
-        double correl_max = 0, correl;
+        double correl;
+        double correl_max = 0, correl_hist = 0, correl_start_point = 0;
         SingleGesture g_max = null;
         //obliczenie wsp. korelacji z każdym wzorcem
         for (SingleGesture sg : samples) {
             correl = singleGesturesCcorrelation(sg, gesture);
             if (correl > correl_max || g_max == null) {
                 correl_max = correl;
+                correl_hist = correlationHist(sg, gesture);
+                correl_start_point = correlationStartPoint(sg.getStart(), gesture.getStart());
                 g_max = sg;
             }
-            Output.info("Wzorzec: "+sg.getFilename()+", korelacja: "+correl);
+            //Output.info("Wzorzec: "+sg.getFilename()+", korelacja: "+correl);
         }
         if(g_max == null) {
-            Output.error("Brak najlepszego dopasowania do wzorca");
-            return;
+            Output.errorThrow("Brak najlepszego dopasowania do wzorca");
         }
-        Output.info("Najlepszy wzorzec: "+g_max.getCharacter()+" ("+g_max.getFilename()+", korelacja: "+correl_max+")");
+        Output.info("Najlepszy wzorzec: "+g_max.getCharacter()+", "+g_max.getFilename()+", korelacja: "+correl_max+" (correl_hist="+correl_hist+", correl_start_point="+correl_start_point+")");
     }
 }

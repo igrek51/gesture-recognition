@@ -1,12 +1,14 @@
-package igrek.touchinterface.gestures;
+package igrek.touchinterface.logic.gestures;
 
 import java.io.Serializable;
 import java.util.List;
 
 import igrek.touchinterface.settings.Config;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 public class FreemanHistogram implements Serializable {
+    private static final long serialVersionUID = 2L;
+
     public float[] histogram = null;
 
     public FreemanHistogram(Track t) {

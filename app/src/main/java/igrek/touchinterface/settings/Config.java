@@ -9,9 +9,7 @@ public class Config {
     //  OUTPUT
     public static class Output {
         public static final String logTag = "log";
-        public static final int echo_spaces = 43;
-        public static final int echo_showtime = 1800; //[ms]
-        public static final int echo_line_max = 40; //maksymalna liczba znaków w 1 wierszu
+        public static final int echo_showtime = 1600; //[ms]
         public static final boolean show_exceptions_trace = true;
     }
     //  SCREEN
@@ -37,7 +35,7 @@ public class Config {
     //  KOLORY
     public static class Colors {
         public static final int background = 0x000000;
-        public static final int text = 0x00f000;
+        public static final int echo_text = 0xa000f000;
         public static final int signature = 0x003000;
         public static class Buttons {
             public static final int background = 0x303030;
@@ -48,21 +46,6 @@ public class Config {
             public static final int alpha = 0xb0;
             public static final int alpha_clicked = 0xd0;
         }
-        public static final int stats_success = 0x00c000;
-        public static final int stats_error = 0xc00000;
-    }
-    //  PANEL DOTYKOWY
-    public static class Touch {
-        //  Sterowanie względne
-        //maksymalna odległość między początkiem a końcem w przypadku zatwierdzania (przycisk OK) [cm]
-        public static final float max_assert_distance = 0.7f;
-        //maksymalna dopuszczalna odchyłka kąta od osi układu współrzędnych (z jednej strony) [stopnie]
-        public static final float max_angle_bias = 38f;
-        //minimalna odległość między punktem początkowym a końcowym [cm]
-        public static final float min_relative_distance = 1.0f;
-        //  Sterowanie bezwzględne
-        //promień środkowego koła (sterowanie bezwzględne) jako część szerokości ekranu
-        public static final float center_radius = 0.167f;
     }
     //  GESTY
     public static class Gestures {
@@ -77,8 +60,8 @@ public class Config {
             //metoda porównywania histogramów:
             //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
             public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
-            public static final float start_point_r1 = 0.25f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
-            public static final float start_point_r2 = 0.5f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
+            public static final float start_point_r1 = 0.35f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
+            public static final float start_point_r2 = 0.7f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

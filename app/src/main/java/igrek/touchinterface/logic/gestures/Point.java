@@ -1,8 +1,10 @@
-package igrek.touchinterface.gestures;
+package igrek.touchinterface.logic.gestures;
 
 import java.io.Serializable;
 
 public class Point implements Serializable {
+    private static final long serialVersionUID = 2L;
+
     public float x;
     public float y;
 

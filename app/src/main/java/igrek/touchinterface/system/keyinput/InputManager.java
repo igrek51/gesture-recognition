@@ -1,4 +1,4 @@
-package igrek.touchinterface.managers;
+package igrek.touchinterface.system.keyinput;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import igrek.touchinterface.R;
 import igrek.touchinterface.graphics.Graphics;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 public class InputManager {
     Graphics graphics;
@@ -51,14 +51,6 @@ public class InputManager {
         });
         editText = (EditText) layoutView.findViewById(R.id.inputKeyboardText);
         textViewLabel = (TextView) layoutView.findViewById(R.id.label_text);
-    }
-
-    public abstract static class InputHandler {
-        public void onAccept(String inputText){ }
-    }
-
-    public abstract static class InputHandlerCancellable extends InputHandler {
-        public void onCancel(String inputText){ }
     }
 
     public void inputScreenShow(String label, String value, InputHandler inputHandler) {

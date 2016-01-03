@@ -1,8 +1,9 @@
-package igrek.touchinterface.logic;
+package igrek.touchinterface.logic.touchscreen;
 
-import igrek.touchinterface.gestures.Track;
+import igrek.touchinterface.logic.engine.Engine;
+import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.settings.App;
-import igrek.touchinterface.system.Output;
+import igrek.touchinterface.system.output.Output;
 
 public class TouchPanel {
     int w, h; //rozmiary ekranu dotykowego
@@ -12,11 +13,11 @@ public class TouchPanel {
     App app;
     Engine engine;
 
-    public TouchPanel(Engine engine, int w, int h) {
-        this.engine = engine;
+    public TouchPanel(int w, int h) {
         this.w = w;
         this.h = h;
         app = App.geti();
+        engine = app.engine;
         dpi = engine.activity.getResources().getDisplayMetrics().densityDpi;
         Output.log("DPI urządzenia: " + dpi);
     }
@@ -27,10 +28,6 @@ public class TouchPanel {
 
     public float cmToPixels(float cm) {
         return cm / INCH * dpi;
-    }
-
-    public float partialW(float partOfWidth){
-        return w * partOfWidth;
     }
 
     public boolean touchDown(float touch_x, float touch_y) {
@@ -57,8 +54,6 @@ public class TouchPanel {
     public boolean touchUp(float touch_x, float touch_y) {
         float rtx = touch_x / w;
         float rty = touch_y / h;
-//        control_realtive(touch_x, touch_y);
-//        return true;
         return false;
     }
 }

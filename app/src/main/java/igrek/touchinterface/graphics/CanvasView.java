@@ -14,41 +14,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.Engine;
-import igrek.touchinterface.settings.Config;
+import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 
-public class CanvasView extends View {
+public abstract class CanvasView extends View {
     public int w, h;
+    ITouchScreenController touchController;
     Paint paint;
     private Canvas canvas = null;
-    Engine engine;
+    private Rect textBounds = new Rect();
 
-    public CanvasView(Context context, Engine engine) {
+    public CanvasView(Context context, ITouchScreenController touchController) {
         super(context);
-        this.engine = engine;
+        this.touchController = touchController;
         paint = new Paint();
     }
 
-    //metoda odrysowująca ekran do nadpisania
-    public void repaint() { }
-
-    //obsługa zdarzeń ekranu dotykowego do zaimplementowania
-    public interface TouchPanel {
-        void touchDown(float touch_x, float touch_y);
-
-        void touchMove(float touch_x, float touch_y);
-
-        void touchUp(float touch_x, float touch_y);
-
-        void resizeEvent();
-    }
+    //odrysowanie ekranu
+    public abstract void repaint();
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         this.w = getWidth();
         this.h = getHeight();
-        engine.resizeEvent();
+        touchController.resizeEvent();
     }
 
     @Override
@@ -64,20 +53,19 @@ public class CanvasView extends View {
         float touch_y = event.getY();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                engine.touchDown(touch_x, touch_y);
+                touchController.touchDown(touch_x, touch_y);
                 break;
             case MotionEvent.ACTION_MOVE:
-                engine.touchMove(touch_x, touch_y);
+                touchController.touchMove(touch_x, touch_y);
                 break;
             case MotionEvent.ACTION_UP:
-                engine.touchUp(touch_x, touch_y);
+                touchController.touchUp(touch_x, touch_y);
                 break;
         }
         return true;
     }
 
     //pomocnicze funkcje rysujące
-    private Rect textBounds = new Rect();
 
     public void drawText(String text, float cx, float cy, int align) {
         //domyślne wartości
