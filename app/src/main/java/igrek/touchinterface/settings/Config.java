@@ -49,10 +49,9 @@ public class Config {
     }
     //  GESTY
     public static class Gestures {
-        public static final int max_wait_time = 500; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
+        public static final int max_wait_time = 400; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
         public static final float plot_height = 0.4f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
-        public static final int normalize_x_samples = 128;
         public static class FreemanChains {
             public static final int directions = 8;
         }
@@ -62,6 +61,7 @@ public class Config {
             public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
             public static final float start_point_r1 = 0.35f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
             public static final float start_point_r2 = 0.85f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
+            public static final float single_gesture_min_correlation = 0.75f; //minimalny współczynnik korelacji dla pojedynczego gestu
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

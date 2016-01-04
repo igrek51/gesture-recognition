@@ -17,7 +17,7 @@ import igrek.touchinterface.system.output.Output;
 public class Graphics extends CanvasView {
     private App app;
     private Engine engine;
-    private boolean refresh = true;
+    private boolean repaintRequested = true;
     public boolean init = false;
 
     public Graphics(Context context, ITouchScreenController touchScreenController) {
@@ -26,14 +26,14 @@ public class Graphics extends CanvasView {
         engine = app.engine;
     }
 
-    public void refresh(){
-        refresh = true;
+    public void repaintRequest(){
+        repaintRequested = true;
     }
 
     @Override
     public void repaint() {
-        if(!refresh) return;
-        refresh = false;
+        if(!repaintRequested) return;
+        repaintRequested = false;
         drawBackground();
         if (!init) return;
         setFontSize(Config.Fonts.fontsize);

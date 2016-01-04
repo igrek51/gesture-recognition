@@ -9,6 +9,8 @@ import igrek.touchinterface.logic.gestures.GestureManager;
 import igrek.touchinterface.logic.gestures.SingleGesture;
 import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.system.keyinput.InputHandler;
 import igrek.touchinterface.system.keyinput.InputHandlerCancellable;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
@@ -28,7 +30,7 @@ public class Engine extends BaseEngine {
     }
 
     public void init2(){
-        lastTracks = new ArrayList<>();
+        app.lastTracks = new ArrayList<>();
         gestureManager = new GestureManager();
         try {
             setAppMode(Types.AppMode.MENU);
@@ -41,11 +43,11 @@ public class Engine extends BaseEngine {
 
     public void update2() throws Exception {
         //TODO: repaint tylko w potrzebie a nie w każdej klatce
-        graphics.refresh();
+        graphics.repaintRequest();
         //obsługa przycisków
         buttonsManager.executeClicked();
         //zdejmowanie gestu po braku aktywności
-        if (currentTrack != null) {
+        if (app.currentTrack != null) {
             if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
                 addNewTrack();
             }
@@ -57,28 +59,43 @@ public class Engine extends BaseEngine {
     }
 
     public void addNewTrack() {
-        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(currentTrack));
-        lastTracks.add(currentTrack);
-        while (lastTracks.size() > 4) {
-            lastTracks.remove(0);
+        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(app.currentTrack));
+        app.lastTracks.add(app.currentTrack);
+        while (app.lastTracks.size() > 4) {
+            app.lastTracks.remove(0);
         }
-        currentHistogram = new FreemanHistogram(filteredTrack);
-        currentGesture = new SingleGesture(currentTrack.getStart(), currentHistogram);
-        currentTrack = null;
+        app.currentHistogram = new FreemanHistogram(filteredTrack);
+        app.currentSingleGesture = new SingleGesture(app.currentTrack.getStart(), app.currentHistogram);
+        app.currentTrack = null;
     }
 
     public void clickedPathPreferences() {
         inputmanager.inputScreenShow("Ścieżka do wzorców:", app.samplesPath, new InputHandlerCancellable() {
             @Override
-            public void onAccept(String inputText) {
-                app.samplesPath = inputText;
+            public void onAccept(String input) {
+                app.samplesPath = input;
                 preferences.preferencesSave();
             }
         });
     }
 
     public void saveCurrentSample() {
-        if (currentHistogram == null || currentHistogram.histogram == null || currentGesture == null) {
+        inputmanager.inputScreenShow("Liczba pojedynczych gestów składających się na złożony gest:", new InputHandlerCancellable() {
+            @Override
+            public void onAccept(String inputText) {
+                try {
+                    ComplexGesture complexGesture = new ComplexGesture();
+                    complexGesture.add(app.currentSingleGesture);
+                    gestureManager.saveSample(complexGesture, inputText);
+                } catch (SoftErrorException e) {
+                    Output.error(e);
+                }
+            }
+        });
+    }
+
+    public void saveCurrentSample2() {
+        if (app.currentHistogram == null || app.currentHistogram.histogram == null || app.currentSingleGesture == null) {
             Output.error("Brak histogramu do zapisania");
             return;
         }
@@ -86,7 +103,9 @@ public class Engine extends BaseEngine {
             @Override
             public void onAccept(String inputText) {
                 try {
-                    gestureManager.saveSample(currentGesture, inputText);
+                    ComplexGesture complexGesture = new ComplexGesture();
+                    complexGesture.add(app.currentSingleGesture);
+                    gestureManager.saveSample(complexGesture, inputText);
                 } catch (SoftErrorException e) {
                     Output.error(e);
                 }

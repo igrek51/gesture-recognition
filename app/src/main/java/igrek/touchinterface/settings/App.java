@@ -1,7 +1,12 @@
 package igrek.touchinterface.settings;
 
+import java.util.List;
+
 import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.gestures.FreemanHistogram;
+import igrek.touchinterface.logic.gestures.SingleGesture;
+import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.system.output.Output;
 
 public class App {
@@ -40,4 +45,10 @@ public class App {
     public Types.AppMode mode = Types.AppMode.MENU;
     public long gesture_edit_time = 0;
     public String samplesPath = "Android/data/igrek.touchinterface/samples/";
+
+    public Track currentTrack = null;
+    public FreemanHistogram currentHistogram = null;
+    public SingleGesture currentSingleGesture = null;
+    public List<Track> lastTracks;
+
 }

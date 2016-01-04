@@ -1,5 +1,6 @@
 package igrek.touchinterface.system.keyinput;
 
 public abstract class InputHandler {
-    public abstract void onAccept(String inputText);
+    public void onAccept(String input){ }
+    public void onAccept(int input){ }
 }

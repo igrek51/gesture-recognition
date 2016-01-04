@@ -44,7 +44,7 @@ public class ButtonsManager extends BaseButtonsManager {
         });
         add("Rozpoznaj", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.gestureManager.recognizeSample(engine.currentGesture);
+                engine.gestureManager.inputSingleGestureAndRecognize();
             }
         });
         add("Usuń wzorzec", ButtonId.DELETE_SAMPLE, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {

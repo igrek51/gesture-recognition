@@ -26,8 +26,6 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
-import java.util.List;
-
 public abstract class BaseEngine implements ITimerRunner, ITouchScreenController {
     boolean init = false;
     boolean running = true;
@@ -42,11 +40,6 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
     public Preferences preferences;
     public InputManager inputmanager = null;
     public GestureManager gestureManager = null;
-
-    public Track currentTrack = null;
-    public List<Track> lastTracks;
-    public FreemanHistogram currentHistogram = null;
-    public SingleGesture currentGesture = null;
 
     public BaseEngine(AppCompatActivity activity) {
         this.activity = activity;
