@@ -46,9 +46,7 @@ public class App {
     public long gesture_edit_time = 0;
     public String samplesPath = "Android/data/igrek.touchinterface/samples/";
 
-    public Track currentTrack = null;
-    public FreemanHistogram currentHistogram = null;
-    public SingleGesture currentSingleGesture = null;
+    public Track currentTrack = null; //lista punktów w trakcie rysowania
     public List<Track> lastTracks;
-
+    public List<SingleGesture> lastSingleGestures;
 }

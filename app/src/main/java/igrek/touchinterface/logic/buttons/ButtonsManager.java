@@ -12,11 +12,11 @@ public class ButtonsManager extends BaseButtonsManager {
 
     public enum ButtonId {
         CLEAR_CONSOLE, EXIT,
-        SAMPLES_PATH, SAVE_SAMPLE, LIST_SAMPLES, RECOGNIZE_SAMPLE, DELETE_SAMPLE
+        SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE, DELETE_SAMPLE,
+        RECOGNIZE_SAMPLE, RECOGNIZE_RESET
     }
 
     public void initButtons(){
-        //TODO: id buttonów nie jako string
         add("Czyść konsolę", ButtonId.CLEAR_CONSOLE, new RelativeGeometry(0, 0, 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 Output.reset();
@@ -42,7 +42,7 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.gestureManager.listSamples();
             }
         });
-        add("Rozpoznaj", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Rozpoznaj (1 krok)", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.gestureManager.inputSingleGestureAndRecognize();
             }
@@ -50,6 +50,11 @@ public class ButtonsManager extends BaseButtonsManager {
         add("Usuń wzorzec", ButtonId.DELETE_SAMPLE, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.deleteSample();
+            }
+        });
+        add("Reset recognizer", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
+            public void clicked() throws Exception {
+                engine.gestureManager.recognizer.reset();
             }
         });
     }
@@ -65,7 +70,8 @@ public class ButtonsManager extends BaseButtonsManager {
             if(bid == ButtonId.LIST_SAMPLES) return true;
             if(bid == ButtonId.RECOGNIZE_SAMPLE) return true;
             if(bid == ButtonId.DELETE_SAMPLE) return true;
+            if(bid == ButtonId.RECOGNIZE_RESET) return true;
         }
-        return false;
+        return true;
     }
 }

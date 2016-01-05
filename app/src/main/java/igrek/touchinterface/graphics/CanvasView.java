@@ -15,20 +15,30 @@ import java.util.List;
 
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
-
-//TODO: włączenie antialiasingu, rysowania na floatach w niektórych urządzeniach
+import igrek.touchinterface.settings.Config;
 
 public abstract class CanvasView extends View {
     public float w, h;
     ITouchScreenController touchController;
-    Paint paint;
+    protected Paint paint;
     private Canvas canvas = null;
     private Rect textBounds = new Rect();
 
     public CanvasView(Context context, ITouchScreenController touchController) {
         super(context);
         this.touchController = touchController;
-        paint = new Paint();
+        int paint_flag = 0;
+        if(Config.Screen.paint_antialias){
+            paint_flag |= Paint.ANTI_ALIAS_FLAG;
+        }
+        if(Config.Screen.paint_subpixel_text){
+            paint_flag |= Paint.SUBPIXEL_TEXT_FLAG;
+        }
+        paint = new Paint(paint_flag);
+    }
+
+    public Paint getPaint(){
+        return paint;
     }
 
     public abstract void repaint();

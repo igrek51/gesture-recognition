@@ -10,7 +10,6 @@ import igrek.touchinterface.logic.gestures.complex.GestureTree;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.output.Output;
-import igrek.touchinterface.system.output.SoftErrorException;
 
 public class GestureRecognizer {
     App app;
@@ -76,6 +75,7 @@ public class GestureRecognizer {
 
     public void checkNextStepGestureTree(SingleGesture unknownGesture) {
         //dla gestów jeszcze nie zakończonych
+        //TODO: synchronizacja z wątkiem grafiki
         for (GestureTrack track : tree.tracks()) {
             if (track.size() > tree.analyzed) {
                 //sprawdzenie kolejnego gestu
@@ -119,19 +119,36 @@ public class GestureRecognizer {
     public ComplexGesture recognizeComplexGesture(){
         if(tree.isEmpty()){
             Output.error("Żaden gest nie został rozpoznany");
+            tree.reset();
             return null;
         }
         if(!tree.isCompleted()){
-            Output.error("Nie można zakończyć rozpoznania, rozważanie dłuższych ciągów");
+            Output.info("Czekam na kolejne gesty, aby ukończyć analizę.");
             return null;
         }
+        Output.info("Zakończono zbieranie gestów, wyznaczam najlepsze rozwiązanie...");
         ComplexGesture result = getBestTrack();
         if(result == null){
             Output.error("getBestTrack = null");
             return null;
         }
-        Output.log("Rozpoznano złożony gest: "+result.getCharacter() + ", "+result.getFilename());
+        int analyzed = tree.analyzed;
+        tree.reset();
+        Output.info("Rozpoznano złożony gest: " + result.getCharacter() + ", "+result.getFilename());
+        //jeśli najlepszym rozwiązaniem jest gest krótszy niż analyzed
+        if(result.size() < analyzed){
+            Output.info("Rozpoznany gest jest krótszy niż poziom analizy. Cofam poziomy: " + (analyzed - result.size()));
+            restoreAnalyzedGestures(analyzed - result.size());
+        }
         return result;
+    }
+
+    public void restoreAnalyzedGestures(int back){
+        //TODO: brakujące gesty powinny być znów od początku analizowane przez createInitialGestureTree i przez checkNextStepGestureTree
+        for(int i=0; i<back; i++){
+            SingleGesture backGesture = app.lastSingleGestures.get(app.lastSingleGestures.size() - 1 - i);
+            //ComplexGesture result = inputAndRecognize(backGesture, samples);
+        }
     }
 
     public ComplexGesture inputAndRecognize(SingleGesture unknownGesture, List<ComplexGesture> samples){
@@ -144,9 +161,6 @@ public class GestureRecognizer {
         }
         tree.listCandidates();
         ComplexGesture result = recognizeComplexGesture();
-        if(result != null){
-            tree.reset();
-        }
         return result;
     }
 }

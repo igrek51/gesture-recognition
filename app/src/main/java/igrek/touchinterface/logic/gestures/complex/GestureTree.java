@@ -44,11 +44,17 @@ public class GestureTree {
         Output.info("Potencjalne gesty (" + size() + "), poziom analizy=" + analyzed + ":");
         for (GestureTrack track : tracks) {
             ComplexGesture complex = track.getComplexGesture();
-            Output.info("" + complex.getCharacter() + ", " + complex.getFilename() + ", size=" + complex.size() + " : ");
+            Output.info("" + complex.getCharacter() + ", " + complex.getFilename() + ", size = " + complex.size() + " : ");
+            boolean first = true;
+            StringBuilder sb = new StringBuilder();
             for (GestureTrackItem item : track.items()) {
-                Output.info(" x " + item.getCorrelation());
+                sb.append((first ? "" : " x ") + item.getCorrelation());
+                first = false;
             }
-            Output.info(" = " + track.getCorrelation());
+            if(complex.size() > 1) {
+                sb.append(" = " + track.getCorrelation());
+            }
+            Output.info(sb.toString());
         }
     }
 }

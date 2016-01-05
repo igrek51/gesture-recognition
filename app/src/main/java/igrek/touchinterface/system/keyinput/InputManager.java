@@ -60,6 +60,7 @@ public class InputManager {
         this.value_type = value_type;
         //imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_NOT_ALWAYS);
         textViewLabel.setText(label);
+        activity.setContentView(layoutView);
         editText.setText(initial_value);
         editText.setSelection(initial_value.length());
         if(Integer.class.isAssignableFrom(value_type)) {
@@ -67,7 +68,6 @@ public class InputManager {
         }else {
             editText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
-        activity.setContentView(layoutView);
         editText.requestFocus();
         //button cancel
         if(inputHandler instanceof InputHandlerCancellable){

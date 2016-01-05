@@ -10,27 +10,24 @@ import igrek.touchinterface.logic.gestures.SingleGesture;
 import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
-import igrek.touchinterface.system.keyinput.InputHandler;
 import igrek.touchinterface.system.keyinput.InputHandlerCancellable;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 import igrek.touchinterface.settings.Config;
 
-
-//TODO: rozpoznawanie złożonych gestów: analiza 2 w tył, analiza nierozpoznanych ostatnich gestów, minimalny współczynnik korelacji
-//TODO: wykorzystanie z OpenCV: filtracja szumów, generowanie pełnego konturu, obliczanie łańcuchów freemana, korelacja histogramów
 //TODO: inteligencja: usuwanie wzorców, które prowadzą do błędnego rozpoznawania
 //TODO: uczenie: dodawanie wszystkich wzorców, usuwanie wzorców, które są rzadko podstawą do rozpoznania
 //TODO: mechanizm usuwania złych wzorców
-//TODO: klasa engine do zarządzania logiką na wyższym poziomie
+//TODO: tryb debugowania - przyciski, tryb szybkiego pisania - release
 
 public class Engine extends BaseEngine {
-    public Engine(AppCompatActivity activity){
+    public Engine(AppCompatActivity activity) {
         super(activity);
     }
 
-    public void init2(){
+    public void init2() {
         app.lastTracks = new ArrayList<>();
+        app.lastSingleGestures = new ArrayList<>();
         gestureManager = new GestureManager();
         try {
             setAppMode(Types.AppMode.MENU);
@@ -49,7 +46,7 @@ public class Engine extends BaseEngine {
         //zdejmowanie gestu po braku aktywności
         if (app.currentTrack != null) {
             if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
-                addNewTrack();
+                addCurrentGestureToHistory();
             }
         }
     }
@@ -58,15 +55,20 @@ public class Engine extends BaseEngine {
         app.mode = mode;
     }
 
-    public void addNewTrack() {
-        Track filteredTrack = Track.filteredTrack(Track.getAllPixels(app.currentTrack));
-        app.lastTracks.add(app.currentTrack);
-        while (app.lastTracks.size() > 4) {
-            app.lastTracks.remove(0);
+    public void addCurrentGestureToHistory() {
+        //jeśli nie ma rysowania
+        if (app.currentTrack != null) {
+            Track filteredTrack = Track.filteredTrack(Track.getAllPixels(app.currentTrack));
+            FreemanHistogram currentHistogram = new FreemanHistogram(filteredTrack);
+            SingleGesture currentSingleGesture = new SingleGesture(app.currentTrack.getStart(), currentHistogram);
+            app.lastTracks.add(app.currentTrack);
+            app.lastSingleGestures.add(currentSingleGesture);
+            while (app.lastTracks.size() > 4) {
+                app.lastTracks.remove(0);
+                app.lastSingleGestures.remove(0);
+            }
+            app.currentTrack = null;
         }
-        app.currentHistogram = new FreemanHistogram(filteredTrack);
-        app.currentSingleGesture = new SingleGesture(app.currentTrack.getStart(), app.currentHistogram);
-        app.currentTrack = null;
     }
 
     public void clickedPathPreferences() {
@@ -80,31 +82,30 @@ public class Engine extends BaseEngine {
     }
 
     public void saveCurrentSample() {
-        inputmanager.inputScreenShow("Liczba pojedynczych gestów składających się na złożony gest:", new InputHandlerCancellable() {
+        app.engine.addCurrentGestureToHistory();
+        inputmanager.inputScreenShow("Liczba pojedynczych gestów:", Integer.class, new InputHandlerCancellable() {
             @Override
-            public void onAccept(String inputText) {
-                try {
-                    ComplexGesture complexGesture = new ComplexGesture();
-                    complexGesture.add(app.currentSingleGesture);
-                    gestureManager.saveSample(complexGesture, inputText);
-                } catch (SoftErrorException e) {
-                    Output.error(e);
+            public void onAccept(int input) {
+                if (input <= 0) {
+                    Output.error("Podana za mała iczba gestów");
+                } else if (input > app.lastTracks.size()) {
+                    Output.error("Podana za duża liczba gestów");
+                } else {
+                    saveCurrentSample2(input);
                 }
             }
         });
     }
 
-    public void saveCurrentSample2() {
-        if (app.currentHistogram == null || app.currentHistogram.histogram == null || app.currentSingleGesture == null) {
-            Output.error("Brak histogramu do zapisania");
-            return;
-        }
+    public void saveCurrentSample2(final int gesture_size) {
         inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputHandlerCancellable() {
             @Override
             public void onAccept(String inputText) {
                 try {
                     ComplexGesture complexGesture = new ComplexGesture();
-                    complexGesture.add(app.currentSingleGesture);
+                    for (int i = gesture_size; i > 0; i--) {
+                        complexGesture.add(app.lastSingleGestures.get(app.lastSingleGestures.size() - i));
+                    }
                     gestureManager.saveSample(complexGesture, inputText);
                 } catch (SoftErrorException e) {
                     Output.error(e);
@@ -124,5 +125,11 @@ public class Engine extends BaseEngine {
                 }
             }
         });
+    }
+
+    public SingleGesture getLastSingleGesture() {
+        addCurrentGestureToHistory();
+        if (app.lastSingleGestures.isEmpty()) return null;
+        return app.lastSingleGestures.get(app.lastSingleGestures.size() - 1);
     }
 }

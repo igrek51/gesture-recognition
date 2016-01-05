@@ -43,6 +43,7 @@ public class Output {
         }
         logError("[EXCEPTION - " + ex.getClass().getName() + "] " + ex.getMessage());
         if(Config.Output.show_exceptions_trace){
+            //TODO: print pod tagiem log, z poziomem warn
             ex.printStackTrace();
         }
     }

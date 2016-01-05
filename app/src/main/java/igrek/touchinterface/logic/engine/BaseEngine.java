@@ -45,16 +45,16 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
         this.activity = activity;
         engine = (Engine) this;
         //schowanie paska tytułu
-        if (Config.hide_taskbar) {
+        if (Config.Screen.hide_taskbar) {
             if (activity.getSupportActionBar() != null) {
                 activity.getSupportActionBar().hide();
             }
         }
         //fullscreen
-        if (Config.fullscreen) {
-            activity.getWindow().setFlags(Config.fullscreen_flag, Config.fullscreen_flag);
+        if (Config.Screen.fullscreen) {
+            activity.getWindow().setFlags(Config.Screen.fullscreen_flag, Config.Screen.fullscreen_flag);
         }
-        if (Config.keep_screen_on) {
+        if (Config.Screen.keep_screen_on) {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         Output.reset();
@@ -105,7 +105,7 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
         if (!running) return;
         if (!init) return;
         update();
-        if (inputmanager != null && !inputmanager.visible) {
+        if (inputmanager != null && !inputmanager.isVisible()) {
             graphics.invalidate();
         }
     }
@@ -170,7 +170,7 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
     }
 
     public void keycodeBack() {
-        if (inputmanager.visible) {
+        if (inputmanager.isVisible()) {
             inputmanager.inputScreenHide();
             return;
         }

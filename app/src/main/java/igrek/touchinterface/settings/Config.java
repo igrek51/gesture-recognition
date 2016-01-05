@@ -9,14 +9,18 @@ public class Config {
     //  OUTPUT
     public static class Output {
         public static final String logTag = "log";
-        public static final int echo_showtime = 1600; //[ms]
+        public static final int echo_showtime = 1800; //[ms]
         public static final boolean show_exceptions_trace = true;
     }
     //  SCREEN
-    public static final int fullscreen_flag = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
-    public static final boolean fullscreen = true;
-    public static final boolean hide_taskbar = true;
-    public static final boolean keep_screen_on = true;
+    public static class Screen {
+        public static final int fullscreen_flag = WindowManager.LayoutParams.FLAG_FULLSCREEN | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
+        public static final boolean fullscreen = true;
+        public static final boolean hide_taskbar = true;
+        public static final boolean keep_screen_on = true;
+        public static final boolean paint_antialias = true;
+        public static final boolean paint_subpixel_text = true;
+    }
     //  TIMER
     public static final int timer_interval0 = 0;
     public static final int timer_fps0 = 10;
@@ -61,7 +65,7 @@ public class Config {
             public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
             public static final float start_point_r1 = 0.35f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
             public static final float start_point_r2 = 0.85f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
-            public static final float single_gesture_min_correlation = 0.75f; //minimalny współczynnik korelacji dla pojedynczego gestu
+            public static final float single_gesture_min_correlation = 0.8f; //minimalny współczynnik korelacji dla pojedynczego gestu
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

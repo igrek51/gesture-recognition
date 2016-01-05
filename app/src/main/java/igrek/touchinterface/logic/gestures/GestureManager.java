@@ -67,7 +67,7 @@ public class GestureManager {
     public void listSamples() {
         Output.info("Lista wzorców: " + samples.size());
         for (ComplexGesture sample : samples) {
-            Output.info("Znak: " + sample.getCharacter() + ", Plik: " + sample.getFilename());
+            Output.info("Znak: " + sample.getCharacter() + ", Plik: " + sample.getFilename() + ", Złożoność: "+sample.size());
         }
     }
 
@@ -121,10 +121,7 @@ public class GestureManager {
     }
 
     public void inputSingleGestureAndRecognize() {
-        if (app.currentTrack != null) { //jeśli trwa rysowanie
-            app.engine.addNewTrack();
-            Output.info("Zakończono rysowanie gestu.");
-        }
-        ComplexGesture result = recognizer.inputAndRecognize(app.currentSingleGesture, samples);
+        app.engine.addCurrentGestureToHistory();
+        ComplexGesture result = recognizer.inputAndRecognize(app.engine.getLastSingleGesture(), samples);
     }
 }

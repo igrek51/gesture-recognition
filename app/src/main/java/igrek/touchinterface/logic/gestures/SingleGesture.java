@@ -7,21 +7,23 @@ public class SingleGesture implements Serializable {
 
     private FreemanHistogram fhistogram;
     private Point start;
+    //TODO: parametryzowanie odporności na przesuwanie gestu
 
-    public SingleGesture(Point start, FreemanHistogram fhistogram){
+    public SingleGesture(Point start, FreemanHistogram fhistogram) {
         this.start = start;
         this.fhistogram = fhistogram;
     }
 
-    public float[] getHistogram(){
+    public float[] getHistogram() {
+        if (fhistogram == null) return null;
         return fhistogram.histogram;
     }
 
-    public float getHistogram(int index){
+    public float getHistogram(int index) {
         return fhistogram.histogram[index];
     }
 
-    public Point getStart(){
+    public Point getStart() {
         return start;
     }
 }

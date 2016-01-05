@@ -26,13 +26,13 @@ public class Graphics extends CanvasView {
         engine = app.engine;
     }
 
-    public void repaintRequest(){
+    public void repaintRequest() {
         repaintRequested = true;
     }
 
     @Override
     public void repaint() {
-        if(!repaintRequested) return;
+        if (!repaintRequested) return;
         repaintRequested = false;
         drawBackground();
         if (!init) return;
@@ -43,7 +43,7 @@ public class Graphics extends CanvasView {
         drawEcho();
     }
 
-    private void drawAppMode(Types.AppMode mode){
+    private void drawAppMode(Types.AppMode mode) {
         if (mode == Types.AppMode.MENU) {
             drawGestureHistogram();
             drawMiniTracks();
@@ -98,12 +98,12 @@ public class Graphics extends CanvasView {
     }
 
     private void drawTrack() {
-        if (engine.currentTrack != null) {
+        if (app.currentTrack != null) {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1);
             setColor(0xffffff);
             Point last = null;
-            for (Point p : engine.currentTrack.getPoints()) {
+            for (Point p : app.currentTrack.getPoints()) {
                 if (last != null) {
                     drawLine(last.x, last.y, p.x, p.y);
                 }
@@ -111,7 +111,7 @@ public class Graphics extends CanvasView {
             }
             paint.setStrokeWidth(0);
             setColor(0x00a000);
-            drawText("Liczba punktów: " + engine.currentTrack.getPoints().size(), 0, h, Types.Align.BOTTOM_LEFT);
+            drawText("Liczba punktów: " + app.currentTrack.getPoints().size(), w, h, Types.Align.BOTTOM_RIGHT);
         }
     }
 
@@ -130,16 +130,17 @@ public class Graphics extends CanvasView {
     private void drawMiniTracks() {
         setColor(0xa0a0a0);
         for (int i = 1; i <= 4; i++) {
-            if (engine.lastTracks.size() - i >= 0) {
-                Track track = engine.lastTracks.get(engine.lastTracks.size() - i);
+            if (app.lastTracks.size() - i >= 0) {
+                Track track = app.lastTracks.get(app.lastTracks.size() - i);
                 drawTrack(track, 0.25f, w - i * w / 4, h * 3 / 4);
             }
         }
     }
 
     private void drawGestureHistogram() {
-        if (engine.currentHistogram != null && engine.currentTrack == null) {
-            if (engine.currentHistogram.histogram != null) {
+        if (!app.lastSingleGestures.isEmpty() && app.currentTrack == null) {
+            float[] histogram = app.engine.getLastSingleGesture().getHistogram();
+            if (histogram != null) {
                 float hr2 = h * Config.Gestures.plot_height / 2;
                 //układ współrzędnych
                 setColor(0x0000a0);
@@ -147,10 +148,10 @@ public class Graphics extends CanvasView {
                 drawLine(1, h / 2 - hr2, 1, h / 2 + hr2); //Y
                 //wykres
                 setColor(0x00a0a0);
-                for (int i = 0; i < engine.currentHistogram.size(); i++) {
-                    float left = w * i / engine.currentHistogram.size() + 1;
-                    float right = w * (i+1) / engine.currentHistogram.size() - 1;
-                    float top = h / 2 + hr2 - engine.currentHistogram.histogram[i] * h * Config.Gestures.plot_height;
+                for (int i = 0; i < histogram.length; i++) {
+                    float left = w * i / histogram.length + 1;
+                    float right = w * (i + 1) / histogram.length - 1;
+                    float top = h / 2 + hr2 - histogram[i] * h * Config.Gestures.plot_height;
                     fillRect(left, top, right, h / 2 + hr2);
                 }
             }
