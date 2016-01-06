@@ -5,9 +5,10 @@ import android.graphics.Paint;
 
 import igrek.touchinterface.logic.buttons.Button;
 import igrek.touchinterface.logic.engine.Engine;
-import igrek.touchinterface.logic.gestures.Point;
-import igrek.touchinterface.logic.gestures.Track;
+import igrek.touchinterface.logic.gestures.single.Point;
+import igrek.touchinterface.logic.gestures.single.Track;
 import igrek.touchinterface.logic.Types;
+import igrek.touchinterface.logic.gestures.complex.RecognizedGesture;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
@@ -48,6 +49,10 @@ public class Graphics extends CanvasView {
             drawGestureHistogram();
             drawMiniTracks();
             drawTrack();
+        }else if (mode == Types.AppMode.WRITING) {
+            drawRecognized();
+            drawMiniTracks();
+            drawTrack();
         }
     }
 
@@ -65,7 +70,6 @@ public class Graphics extends CanvasView {
     private void drawEcho() {
         setColor(Config.Colors.echo_text);
         setFont();
-        Output.echoClear1AfterDelay();
         String splitecho = splitTextMultiline(Output.echos, w);
         drawTextMultiline(splitecho, 0, h, Config.Fonts.lineheight, Types.Align.BOTTOM);
     }
@@ -156,5 +160,16 @@ public class Graphics extends CanvasView {
                 }
             }
         }
+    }
+
+    private void drawRecognized(){
+        setColor(0xa0a000);
+        StringBuilder sb = new StringBuilder();
+        sb.append("Rozpoznany tekst: \n");
+        for(RecognizedGesture recognized : engine.gestureManager.recognized){
+            sb.append(recognized.getCharacter());
+        }
+        String splited = splitTextMultiline(sb.toString(), w);
+        drawTextMultiline(splited, 0, 300, Config.Fonts.lineheight, Types.Align.LEFT);
     }
 }

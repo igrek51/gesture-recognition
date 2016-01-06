@@ -27,7 +27,7 @@ public class Config {
     //  BUTTONY
     public static class Buttons {
         public static final int fontsize = 24;
-        public static final int height = 70;
+        public static final int height = 60;
         public static final int padding_h = 10;
         public static final int padding_v = 10;
     }
@@ -53,7 +53,7 @@ public class Config {
     }
     //  GESTY
     public static class Gestures {
-        public static final int max_wait_time = 400; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
+        public static final int max_wait_time = 800; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
         public static final float plot_height = 0.4f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int max_input_gestures_history = 8;

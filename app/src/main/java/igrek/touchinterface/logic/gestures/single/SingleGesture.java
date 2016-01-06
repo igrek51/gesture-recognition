@@ -1,6 +1,9 @@
-package igrek.touchinterface.logic.gestures;
+package igrek.touchinterface.logic.gestures.single;
 
 import java.io.Serializable;
+
+import igrek.touchinterface.logic.gestures.single.FreemanHistogram;
+import igrek.touchinterface.logic.gestures.single.Point;
 
 public class SingleGesture implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -8,6 +11,7 @@ public class SingleGesture implements Serializable {
     private FreemanHistogram fhistogram;
     private Point start;
     //TODO: parametryzowanie odporności na przesuwanie gestu
+    //TODO: osobny sposób przechowywania kropki
 
     public SingleGesture(Point start, FreemanHistogram fhistogram) {
         this.start = start;

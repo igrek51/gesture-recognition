@@ -12,6 +12,9 @@ import java.util.List;
 import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
 import igrek.touchinterface.logic.gestures.complex.RecognizedGesture;
 import igrek.touchinterface.logic.gestures.recognition.GestureRecognizer;
+import igrek.touchinterface.logic.gestures.single.FreemanHistogram;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
+import igrek.touchinterface.logic.gestures.single.Track;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.files.Path;
 import igrek.touchinterface.settings.App;
@@ -154,17 +157,17 @@ public class GestureManager {
         }
     }
 
-    public void addPointToCurrentTrack(float x, float y){
-        if(currentTrack==null) currentTrack = new Track();
+    public void addPointToCurrentTrack(float x, float y) {
+        if (currentTrack == null) currentTrack = new Track();
         currentTrack.addPoint(x, y);
         app.gesture_edit_time = System.currentTimeMillis();
     }
 
 
-    public List<InputGesture> getLastUnrecognizedInputs(){
+    public List<InputGesture> getLastUnrecognizedInputs() {
         List<InputGesture> unrecognizedGestures = new ArrayList<>();
-        for(InputGesture inputGesture : lastInputGestures){
-            if(!inputGesture.isAnalyzed()){
+        for (InputGesture inputGesture : lastInputGestures) {
+            if (!inputGesture.isAnalyzed()) {
                 unrecognizedGestures.add(inputGesture);
             }
         }
@@ -172,27 +175,30 @@ public class GestureManager {
     }
 
 
-    public void inputAndTryToRecognize(){
+    public void inputAndTryToRecognize(boolean wait) {
         addCurrentGestureToHistory();
-        List<InputGesture> unrecognized = getLastUnrecognizedInputs();
-        if(unrecognized.isEmpty()){
-            Output.info("Brak gestów do rozpoznania");
-            return;
-        }
-        GestureRecognizer recognizer = new GestureRecognizer(samples);
-        ComplexGesture result = recognizer.recognizeComplexGesture(unrecognized);
-        if(result!=null) {
-            List<SingleGesture> singleGestures = new ArrayList<>();
-            for (int i = 0; i < result.size(); i++) {
-                singleGestures.add(unrecognized.get(i).getSingleGesture());
+        ComplexGesture result;
+        do {
+            List<InputGesture> unrecognized = getLastUnrecognizedInputs();
+            if (unrecognized.isEmpty()) {
+                return;
             }
-            recognized.add(new RecognizedGesture(singleGestures, result));
-        }
+            GestureRecognizer recognizer = new GestureRecognizer(samples);
+            result = recognizer.recognizeComplexGesture(unrecognized, wait);
+            if (result != null) {
+                List<SingleGesture> singleGestures = new ArrayList<>();
+                for (int i = 0; i < result.size(); i++) {
+                    singleGestures.add(unrecognized.get(i).getSingleGesture());
+                }
+                recognized.add(new RecognizedGesture(singleGestures, result));
+            }
+        }while(result != null);
+        //TODO: kontynuacja w przypadku nie rozpoznania żadnego gestu
     }
 
-    public void resetInputs(){
+    public void resetInputs() {
         //wysztkie inputy jako analyzed
-        for(InputGesture input : lastInputGestures){
+        for (InputGesture input : lastInputGestures) {
             input.setAnalyzed(true);
         }
         Output.info("Input zresetowany.");

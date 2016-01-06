@@ -6,10 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
 import igrek.touchinterface.logic.buttons.ButtonsManager;
-import igrek.touchinterface.logic.gestures.FreemanHistogram;
 import igrek.touchinterface.logic.gestures.GestureManager;
-import igrek.touchinterface.logic.gestures.SingleGesture;
-import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.graphics.*;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 import igrek.touchinterface.logic.touchscreen.TouchPanel;
@@ -106,6 +103,7 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
         if (!init) return;
         update();
         if (inputmanager != null && !inputmanager.isVisible()) {
+            Output.echoClear1AfterDelay();
             graphics.invalidate();
         }
     }

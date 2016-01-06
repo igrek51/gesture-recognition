@@ -1,13 +1,7 @@
 package igrek.touchinterface.settings;
 
-import java.util.List;
-
 import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.gestures.FreemanHistogram;
-import igrek.touchinterface.logic.gestures.InputGesture;
-import igrek.touchinterface.logic.gestures.SingleGesture;
-import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.system.output.Output;
 
 public class App {

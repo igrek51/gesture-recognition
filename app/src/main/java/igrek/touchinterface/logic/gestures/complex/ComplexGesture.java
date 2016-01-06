@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import igrek.touchinterface.logic.gestures.SingleGesture;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
 
 public class ComplexGesture implements Serializable, Comparable {
     private static final long serialVersionUID = 1L;

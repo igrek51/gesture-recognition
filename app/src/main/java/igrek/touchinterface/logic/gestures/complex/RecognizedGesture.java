@@ -2,8 +2,7 @@ package igrek.touchinterface.logic.gestures.complex;
 
 import java.util.List;
 
-import igrek.touchinterface.logic.gestures.SingleGesture;
-import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
 
 public class RecognizedGesture {
     private List<SingleGesture> inputSingleGestures;

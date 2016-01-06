@@ -3,7 +3,7 @@ package igrek.touchinterface.logic.gestures.recognition;
 import java.util.List;
 
 import igrek.touchinterface.logic.gestures.InputGesture;
-import igrek.touchinterface.logic.gestures.SingleGesture;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
 import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
@@ -36,7 +36,7 @@ public class GestureRecognizer {
         return best.getComplexGesture();
     }
 
-    public ComplexGesture recognizeComplexGesture(List<InputGesture> unrecognizedGestures) {
+    public ComplexGesture recognizeComplexGesture(List<InputGesture> unrecognizedGestures, boolean wait) {
         if (unrecognizedGestures.isEmpty()){
             Output.error("Brak gestów do rozpoznania");
             return null;
@@ -57,9 +57,13 @@ public class GestureRecognizer {
                 //jeśli ciąg nierozpoznanych gestów jest za krótki, aby móc kontynuować dalsze porównanie
                 if (level >= unrecognizedGestures.size()) {
                     //koniec rozpoznawania, brak wyniku, czekanie na większą liczbę gestów
-                    Output.info("Czekam na kolejne gesty, aby ukończyć analizę:");
-                    track.list();
-                    return null;
+                    if(wait) {
+                        Output.info("Czekam na kolejne gesty, aby ukończyć analizę:");
+                        track.list();
+                        return null;
+                    }else{ //brak czekania - odrzucenie gestu w przypadku braku dalszych gestów
+                        break;
+                    }
                 }
                 SingleGesture unrecognized = unrecognizedGestures.get(level).getSingleGesture();
                 SingleGesture singleSample = complex.get(level);
@@ -86,7 +90,7 @@ public class GestureRecognizer {
             return null;
         }
         //wszystkie możliwe wzorce zostały w pełni sprawdzone i znajdują się w tree, nie trzeba czekać na dłuższe gesty
-        tree.list();
+        //tree.list();
         ComplexGesture result = getBestTrack(tree);
         if (result == null) {
             Output.error("getBestTrack = null");

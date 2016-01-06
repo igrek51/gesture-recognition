@@ -96,54 +96,8 @@ public abstract class BaseButtonsManager {
         }
     }
 
-
-    public float lastLeft() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        return buttons.get(buttons.size() - 1).x;
-    }
-
-    public float lastLeftRelative() {
-        return lastLeft() / app.w();
-    }
-
-    public float lastRight() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        Button last = buttons.get(buttons.size() - 1);
-        return last.x + last.w;
-    }
-
-    public float lastRightRelative() {
-        return lastRight() / app.w();
-    }
-
-    public float lastTop() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        return buttons.get(buttons.size() - 1).y;
-    }
-
-    public float lastTopRelative() {
-        return lastTop() / app.h();
-    }
-
-    public float lastBottom() {
-        if (buttons.size() == 0) {
-            Output.error("Brak buttonów na liście.");
-            return 0;
-        }
-        Button last = buttons.get(buttons.size() - 1);
-        return last.y + last.h;
-    }
-
-    public float lastBottomRelative() {
-        return lastBottom() / app.h();
+    public Button last(){
+        if(buttons.isEmpty()) return null;
+        return buttons.get(buttons.size() - 1);
     }
 }

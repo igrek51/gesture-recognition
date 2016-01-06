@@ -15,6 +15,7 @@ import igrek.touchinterface.settings.Config;
 //TODO: mechanizm usuwania złych wzorców
 //TODO: zapisywanie liczby dobrze rozpoznanych wzorców i źle rozpoznanych wzorców
 //TODO: tryb debugowania - przyciski, tryb szybkiego pisania - release
+//TODO: po pewnym czasie nieaktywności, gesty są zdejmowane i następuje analiza bez czekania na dłuższe wzorce
 
 public class Engine extends BaseEngine {
     public Engine(AppCompatActivity activity) {
@@ -41,6 +42,9 @@ public class Engine extends BaseEngine {
         if (gestureManager.currentTrack != null) {
             if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
                 gestureManager.addCurrentGestureToHistory();
+                if(app.mode == Types.AppMode.WRITING){
+                    gestureManager.inputAndTryToRecognize(false);
+                }
             }
         }
     }
@@ -63,6 +67,7 @@ public class Engine extends BaseEngine {
 
     public void saveCurrentSample() {
         gestureManager.addCurrentGestureToHistory();
+        gestureManager.resetInputs();
         inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputHandlerCancellable() {
             @Override
             public void onAccept(String input) {

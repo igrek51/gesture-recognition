@@ -35,6 +35,6 @@ public class Types {
     }
 
     public enum AppMode {
-        MENU
+        MENU, WRITING
     }
 }

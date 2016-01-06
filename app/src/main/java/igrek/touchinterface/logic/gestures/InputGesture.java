@@ -1,5 +1,8 @@
 package igrek.touchinterface.logic.gestures;
 
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
+import igrek.touchinterface.logic.gestures.single.Track;
+
 public class InputGesture {
     private Track track;
     private SingleGesture singleGesture;

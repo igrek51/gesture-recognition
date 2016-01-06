@@ -4,8 +4,8 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
-import igrek.touchinterface.logic.gestures.Point;
-import igrek.touchinterface.logic.gestures.SingleGesture;
+import igrek.touchinterface.logic.gestures.single.Point;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 

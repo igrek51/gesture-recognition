@@ -5,6 +5,7 @@ import android.graphics.Rect;
 
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.buttons.geometry.Geometry;
+import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 
 public class Button {
@@ -75,5 +76,38 @@ public class Button {
 
     public boolean isInRect(float touch_x, float touch_y) {
         return touch_x >= x && touch_x <= x + w && touch_y >= y && touch_y <= y + h;
+    }
+
+
+    public float left() {
+        return x;
+    }
+
+    public float leftRelative() {
+        return left() / App.geti().w();
+    }
+
+    public float right() {
+        return x + w;
+    }
+
+    public float rightRelative() {
+        return right() / App.geti().w();
+    }
+
+    public float top() {
+        return y;
+    }
+
+    public float topRelative() {
+        return top() / App.geti().h();
+    }
+
+    public float bottom() {
+        return y + h;
+    }
+
+    public float bottomRelative() {
+        return bottom() / App.geti().h();
     }
 }
