@@ -1,7 +1,6 @@
 package igrek.touchinterface.logic.touchscreen;
 
 import igrek.touchinterface.logic.engine.Engine;
-import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
 
@@ -33,18 +32,13 @@ public class TouchPanel {
     public boolean touchDown(float touch_x, float touch_y) {
         start_x = touch_x;
         start_y = touch_y;
-        engine.addCurrentGestureToHistory();
-        app.gesture_edit_time = System.currentTimeMillis();
-        app.currentTrack = new Track();
-        app.currentTrack.addPoint(touch_x, touch_y);
+        engine.gestureManager.addCurrentGestureToHistory();
+        engine.gestureManager.addPointToCurrentTrack(touch_x, touch_y);
         return true;
     }
 
     public boolean touchMove(float touch_x, float touch_y) {
-        if (app.currentTrack != null) {
-            app.currentTrack.addPoint(touch_x, touch_y);
-            app.gesture_edit_time = System.currentTimeMillis();
-        }
+        engine.gestureManager.addPointToCurrentTrack(touch_x, touch_y);
         return false;
     }
 

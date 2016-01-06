@@ -98,12 +98,12 @@ public class Graphics extends CanvasView {
     }
 
     private void drawTrack() {
-        if (app.currentTrack != null) {
+        if (engine.gestureManager.currentTrack != null) {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1);
             setColor(0xffffff);
             Point last = null;
-            for (Point p : app.currentTrack.getPoints()) {
+            for (Point p : engine.gestureManager.currentTrack.getPoints()) {
                 if (last != null) {
                     drawLine(last.x, last.y, p.x, p.y);
                 }
@@ -111,7 +111,7 @@ public class Graphics extends CanvasView {
             }
             paint.setStrokeWidth(0);
             setColor(0x00a000);
-            drawText("Liczba punktów: " + app.currentTrack.getPoints().size(), w, h, Types.Align.BOTTOM_RIGHT);
+            drawText("Liczba punktów: " + engine.gestureManager.currentTrack.getPoints().size(), w, 0, Types.Align.RIGHT);
         }
     }
 
@@ -129,17 +129,17 @@ public class Graphics extends CanvasView {
 
     private void drawMiniTracks() {
         setColor(0xa0a0a0);
-        for (int i = 1; i <= 4; i++) {
-            if (app.lastTracks.size() - i >= 0) {
-                Track track = app.lastTracks.get(app.lastTracks.size() - i);
-                drawTrack(track, 0.25f, w - i * w / 4, h * 3 / 4);
+        for (int i = 4 - 1; i >= 0; i--) {
+            if (engine.gestureManager.getLastInputGesture(i) != null) {
+                Track track = engine.gestureManager.getLastInputGesture(i).getTrack();
+                drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 3 / 4);
             }
         }
     }
 
     private void drawGestureHistogram() {
-        if (!app.lastSingleGestures.isEmpty() && app.currentTrack == null) {
-            float[] histogram = app.engine.getLastSingleGesture().getHistogram();
+        if (engine.gestureManager.getLastInputsCount() > 0 && engine.gestureManager.currentTrack == null) {
+            float[] histogram = engine.gestureManager.getLastInputGesture().getSingleGesture().getHistogram();
             if (histogram != null) {
                 float hr2 = h * Config.Gestures.plot_height / 2;
                 //układ współrzędnych

@@ -5,6 +5,7 @@ import java.util.List;
 import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.gestures.FreemanHistogram;
+import igrek.touchinterface.logic.gestures.InputGesture;
 import igrek.touchinterface.logic.gestures.SingleGesture;
 import igrek.touchinterface.logic.gestures.Track;
 import igrek.touchinterface.system.output.Output;
@@ -32,6 +33,7 @@ public class App {
 
     public Engine engine;
 
+    //  ALIASY
     //  Rozmiar ekranu
     public float w() {
         return engine.graphics.w;
@@ -45,8 +47,4 @@ public class App {
     public Types.AppMode mode = Types.AppMode.MENU;
     public long gesture_edit_time = 0;
     public String samplesPath = "Android/data/igrek.touchinterface/samples/";
-
-    public Track currentTrack = null; //lista punktów w trakcie rysowania
-    public List<Track> lastTracks;
-    public List<SingleGesture> lastSingleGestures;
 }

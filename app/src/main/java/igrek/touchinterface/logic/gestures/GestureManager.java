@@ -10,22 +10,28 @@ import java.util.Collections;
 import java.util.List;
 
 import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.logic.gestures.complex.RecognizedGesture;
 import igrek.touchinterface.logic.gestures.recognition.GestureRecognizer;
+import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.files.Path;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 
-//TODO: przegląd wzorców, punktów startu, usuwanie
+//TODO: przegląd wzorców, punktów startu, usuwanie, manager
+//TODO: serializacja całej listy wzorców wraz z liczbami poprawnych i niepoprawnych rozpoznań
 
 public class GestureManager {
     App app;
     public List<ComplexGesture> samples;
-    public GestureRecognizer recognizer;
+    public Track currentTrack = null; //lista punktów w trakcie rysowania
+    private List<InputGesture> lastInputGestures; //historia wprowadzonych pojedynczych gestów
+    public List<RecognizedGesture> recognized;
 
     public GestureManager() {
         app = App.geti();
-        recognizer = new GestureRecognizer();
+        lastInputGestures = new ArrayList<>();
+        recognized = new ArrayList<>();
         loadSamples();
         sortSamples();
     }
@@ -67,7 +73,7 @@ public class GestureManager {
     public void listSamples() {
         Output.info("Lista wzorców: " + samples.size());
         for (ComplexGesture sample : samples) {
-            Output.info("Znak: " + sample.getCharacter() + ", Plik: " + sample.getFilename() + ", Złożoność: "+sample.size());
+            Output.info("Znak: " + sample.getCharacter() + ", Plik: " + sample.getFilename() + ", Złożoność: " + sample.size());
         }
     }
 
@@ -120,8 +126,77 @@ public class GestureManager {
         }
     }
 
-    public void inputSingleGestureAndRecognize() {
-        app.engine.addCurrentGestureToHistory();
-        ComplexGesture result = recognizer.inputAndRecognize(app.engine.getLastSingleGesture(), samples);
+
+    public InputGesture getLastInputGesture(int endIndex) {
+        if (lastInputGestures.isEmpty()) return null;
+        if (endIndex < 0 || endIndex >= lastInputGestures.size()) return null;
+        return lastInputGestures.get(lastInputGestures.size() - 1 - endIndex);
     }
+
+    public InputGesture getLastInputGesture() {
+        return getLastInputGesture(0);
+    }
+
+    public int getLastInputsCount() {
+        return lastInputGestures.size();
+    }
+
+    public void addCurrentGestureToHistory() {
+        if (currentTrack != null) { //jeśli jest w trakcie rysowania
+            Track filteredTrack = Track.filteredTrack(Track.getAllPixels(currentTrack));
+            FreemanHistogram currentHistogram = new FreemanHistogram(filteredTrack);
+            SingleGesture currentSingleGesture = new SingleGesture(currentTrack.getStart(), currentHistogram);
+            lastInputGestures.add(new InputGesture(currentTrack, currentSingleGesture));
+            while (lastInputGestures.size() > Config.Gestures.max_input_gestures_history) {
+                lastInputGestures.remove(0);
+            }
+            currentTrack = null;
+        }
+    }
+
+    public void addPointToCurrentTrack(float x, float y){
+        if(currentTrack==null) currentTrack = new Track();
+        currentTrack.addPoint(x, y);
+        app.gesture_edit_time = System.currentTimeMillis();
+    }
+
+
+    public List<InputGesture> getLastUnrecognizedInputs(){
+        List<InputGesture> unrecognizedGestures = new ArrayList<>();
+        for(InputGesture inputGesture : lastInputGestures){
+            if(!inputGesture.isAnalyzed()){
+                unrecognizedGestures.add(inputGesture);
+            }
+        }
+        return unrecognizedGestures;
+    }
+
+
+    public void inputAndTryToRecognize(){
+        addCurrentGestureToHistory();
+        List<InputGesture> unrecognized = getLastUnrecognizedInputs();
+        if(unrecognized.isEmpty()){
+            Output.info("Brak gestów do rozpoznania");
+            return;
+        }
+        GestureRecognizer recognizer = new GestureRecognizer(samples);
+        ComplexGesture result = recognizer.recognizeComplexGesture(unrecognized);
+        if(result!=null) {
+            List<SingleGesture> singleGestures = new ArrayList<>();
+            for (int i = 0; i < result.size(); i++) {
+                singleGestures.add(unrecognized.get(i).getSingleGesture());
+            }
+            recognized.add(new RecognizedGesture(singleGestures, result));
+        }
+    }
+
+    public void resetInputs(){
+        //wysztkie inputy jako analyzed
+        for(InputGesture input : lastInputGestures){
+            input.setAnalyzed(true);
+        }
+        Output.info("Input zresetowany.");
+    }
+
+
 }

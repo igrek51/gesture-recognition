@@ -9,12 +9,12 @@ import igrek.touchinterface.logic.gestures.SingleGesture;
 public class ComplexGesture implements Serializable, Comparable {
     private static final long serialVersionUID = 1L;
 
-    public List<SingleGesture> sgs;
+    private List<SingleGesture> singleGestures;
     private String character = null;
     private String filename = null;
 
     public ComplexGesture(){
-        sgs = new ArrayList<>();
+        singleGestures = new ArrayList<>();
     }
 
     public int compareTo(Object another) {
@@ -23,16 +23,19 @@ public class ComplexGesture implements Serializable, Comparable {
     }
 
     public void add(SingleGesture sg){
-        sgs.add(sg);
+        singleGestures.add(sg);
     }
 
+    /**
+     * @return złożoność gestu
+     */
     public int size(){
-        return sgs.size();
+        return singleGestures.size();
     }
 
     public SingleGesture get(int i){
-        if(i<0 || i>=sgs.size()) return null;
-        return sgs.get(i);
+        if(i<0 || i>= singleGestures.size()) return null;
+        return singleGestures.get(i);
     }
 
     public void setCharacter(String character){

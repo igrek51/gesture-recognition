@@ -42,9 +42,9 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.gestureManager.listSamples();
             }
         });
-        add("Rozpoznaj (1 krok)", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Rozpoznaj", ButtonId.RECOGNIZE_SAMPLE, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.gestureManager.inputSingleGestureAndRecognize();
+                engine.gestureManager.inputAndTryToRecognize();
             }
         });
         add("Usuń wzorzec", ButtonId.DELETE_SAMPLE, new RelativeGeometry(0, lastBottomRelative(), 0.5f, 0), new ButtonActionListener() {
@@ -52,9 +52,9 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.deleteSample();
             }
         });
-        add("Reset recognizer", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Reset input", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(lastRightRelative(), lastTopRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.gestureManager.recognizer.reset();
+                engine.gestureManager.resetInputs();
             }
         });
     }

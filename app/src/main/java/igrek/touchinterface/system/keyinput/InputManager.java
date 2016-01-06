@@ -104,7 +104,13 @@ public class InputManager {
         if(inputHandler!=null){
             //wywołanie zdarzenia
             if(Integer.class.isAssignableFrom(value_type)) {
-                inputHandler.onAccept(Integer.parseInt(editText.getText().toString()));
+                int value = 0;
+                try {
+                    value = Integer.parseInt(editText.getText().toString());
+                }catch (NumberFormatException e){
+                    Output.error("Nieprawidłowy format liczby całkowitej");
+                }
+                inputHandler.onAccept(value);
             }else {
                 inputHandler.onAccept(editText.getText().toString());
             }

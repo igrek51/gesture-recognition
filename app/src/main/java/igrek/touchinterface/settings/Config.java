@@ -56,6 +56,7 @@ public class Config {
         public static final int max_wait_time = 400; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
         public static final float plot_height = 0.4f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
+        public static final int max_input_gestures_history = 8;
         public static class FreemanChains {
             public static final int directions = 8;
         }
