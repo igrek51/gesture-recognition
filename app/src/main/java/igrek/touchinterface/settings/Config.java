@@ -8,7 +8,7 @@ public class Config {
     //STAŁE
     //  OUTPUT
     public static class Output {
-        public static final String logTag = "log";
+        public static final String logTag = "ylog";
         public static final int echo_showtime = 1800; //[ms]
         public static final boolean show_exceptions_trace = true;
     }
@@ -57,16 +57,19 @@ public class Config {
         public static final float plot_height = 0.4f;
         public static final int avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int max_input_gestures_history = 8;
+        public static final int max_dot_pixels = 15; //maksymalna liczba pikseli trasy, któa zostaje uznana za kropkę
         public static class FreemanChains {
             public static final int directions = 8;
+            public static final boolean normalize_histogram = false;
         }
         public static class Correlation {
             //metoda porównywania histogramów:
             //CV_COMP_BHATTACHARYYA, CV_COMP_INTERSECT, CV_COMP_CHISQR, CV_COMP_CORREL
-            public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL;
-            public static final float start_point_r1 = 0.35f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
-            public static final float start_point_r2 = 0.85f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
-            public static final float single_gesture_min_correlation = 0.8f; //minimalny współczynnik korelacji dla pojedynczego gestu
+            public static final int histogram_compare_method = Imgproc.CV_COMP_CORREL; //Współczynnik korelacji liniowej Pearsona
+            public static final float start_point_r1 = 0.25f; //maksymalna względna odległość punktów startu niewpływająca na współczynnik korelacji
+            public static final float start_point_r2 = 1.5f; //minimalna względna odległość punktów startu powyżej której współczynnik korelacji = 0
+            public static final float single_gesture_min_correlation = 0.83f; //minimalny współczynnik korelacji dla pojedynczego gestu
+            public static final float complex_gesture_min_correlation = 0.80f; //minimalny współczynnik korelacji dla iloczynu pojedynczych gestów
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

@@ -49,14 +49,14 @@ public class GesturePossibility {
     }
 
     public void list() {
-        Output.info("" + sample.getCharacter() + ", " + sample.getFilename() + ", size = " + sample.size() + " : ");
         StringBuilder sb = new StringBuilder();
+        sb.append(sample.getCharacter() + ", " + sample.getName() + ", size=" + sample.size() + " : ");
         for (int i = 0; i < sample.size(); i++) {
             sb.append((i == 0 ? "" : " x ") + getCorrelation(i));
         }
         if (sample.size() > 1) {
             sb.append(" = " + getCorrelation());
         }
-        Output.info(sb.toString());
+        Output.log(sb.toString());
     }
 }

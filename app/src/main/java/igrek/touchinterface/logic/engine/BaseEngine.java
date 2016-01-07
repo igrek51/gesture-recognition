@@ -82,14 +82,14 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
             @Override
             public void onManagerConnected(int status) {
                 if (status == LoaderCallbackInterface.SUCCESS) {
-                    Output.info("OpenCV loaded successfully");
+                    Output.info("OpenCV załadowane");
                 } else {
                     super.onManagerConnected(status);
                 }
             }
         };
         if (!OpenCVLoader.initDebug()) {
-            Output.info("Internal OpenCV library not found. Using OpenCV Manager for initialization");
+            Output.info("Brak wewnętrznej biblioteki OpenCV. Inicjalizacja poprzez OpenCV Manager");
             OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, activity, mLoaderCallback);
         } else {
             Output.info("OpenCV library found inside package. Using it!");

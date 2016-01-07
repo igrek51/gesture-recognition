@@ -43,9 +43,12 @@ public class Output {
         }
         logError("[EXCEPTION - " + ex.getClass().getName() + "] " + ex.getMessage());
         if(Config.Output.show_exceptions_trace){
-            //TODO: print pod tagiem log, z poziomem warn
-            ex.printStackTrace();
+            printStackTrace(ex);
         }
+    }
+
+    public static void printStackTrace(Exception ex){
+        logError(Log.getStackTraceString(ex));
     }
 
     public static void errorThrow(String e) throws SoftErrorException {

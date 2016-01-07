@@ -5,6 +5,7 @@ import android.graphics.Paint;
 
 import igrek.touchinterface.logic.buttons.Button;
 import igrek.touchinterface.logic.engine.Engine;
+import igrek.touchinterface.logic.gestures.single.FreemanHistogram;
 import igrek.touchinterface.logic.gestures.single.Point;
 import igrek.touchinterface.logic.gestures.single.Track;
 import igrek.touchinterface.logic.Types;
@@ -144,7 +145,8 @@ public class Graphics extends CanvasView {
     private void drawGestureHistogram() {
         if (engine.gestureManager.getLastInputsCount() > 0 && engine.gestureManager.currentTrack == null) {
             float[] histogram = engine.gestureManager.getLastInputGesture().getSingleGesture().getHistogram();
-            if (histogram != null) {
+            float[] normalized = FreemanHistogram.getNewNormalized(histogram);
+            if (normalized != null) {
                 float hr2 = h * Config.Gestures.plot_height / 2;
                 //układ współrzędnych
                 setColor(0x0000a0);
@@ -152,10 +154,10 @@ public class Graphics extends CanvasView {
                 drawLine(1, h / 2 - hr2, 1, h / 2 + hr2); //Y
                 //wykres
                 setColor(0x00a0a0);
-                for (int i = 0; i < histogram.length; i++) {
-                    float left = w * i / histogram.length + 1;
-                    float right = w * (i + 1) / histogram.length - 1;
-                    float top = h / 2 + hr2 - histogram[i] * h * Config.Gestures.plot_height;
+                for (int i = 0; i < normalized.length; i++) {
+                    float left = w * i / normalized.length + 1;
+                    float right = w * (i + 1) / normalized.length - 1;
+                    float top = h / 2 + hr2 - normalized[i] * h * Config.Gestures.plot_height;
                     fillRect(left, top, right, h / 2 + hr2);
                 }
             }
@@ -164,6 +166,7 @@ public class Graphics extends CanvasView {
 
     private void drawRecognized(){
         setColor(0xa0a000);
+        setFont(Types.Font.FONT_MONOSPACE);
         StringBuilder sb = new StringBuilder();
         sb.append("Rozpoznany tekst: \n");
         for(RecognizedGesture recognized : engine.gestureManager.recognized){

@@ -14,7 +14,8 @@ public class ButtonsManager extends BaseButtonsManager {
         CLEAR_CONSOLE, EXIT,
         SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE, DELETE_SAMPLE,
         RECOGNIZE_SAMPLE, RECOGNIZE_RESET,
-        MENU, WRITING
+        MENU, WRITING,
+        BACKSPACE
     }
 
     public void initButtons(){
@@ -28,9 +29,14 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.quit();
             }
         });
-        add("Lokalizacja wzorców", ButtonId.SAMPLES_PATH, new RelativeGeometry(0, last().bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Szybkie Pisanie", ButtonId.WRITING, new RelativeGeometry(0, last().bottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.clickedPathPreferences();
+                engine.setAppMode(Types.AppMode.WRITING);
+            }
+        });
+        add("Manager gestów", ButtonId.MENU, new RelativeGeometry(0, clear_console_b.bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+            public void clicked() throws Exception {
+                engine.setAppMode(Types.AppMode.MENU);
             }
         });
         add("Zapisz wzorzec", ButtonId.SAVE_SAMPLE, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
@@ -53,19 +59,19 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.deleteSample();
             }
         });
-        add("Reset input", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
+        Button recognize_reset = add("Reset input", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.gestureManager.resetInputs();
             }
         });
-        add("Pisanie", ButtonId.WRITING, new RelativeGeometry(0, last().bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Lokalizacja wzorców", ButtonId.SAMPLES_PATH, new RelativeGeometry(0, last().bottomRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.setAppMode(Types.AppMode.WRITING);
+                engine.clickedPathPreferences();
             }
         });
-        add("Menu", ButtonId.MENU, new RelativeGeometry(0, clear_console_b.bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Backspace", ButtonId.MENU, new RelativeGeometry(0, recognize_reset.topRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.setAppMode(Types.AppMode.MENU);
+                engine.gestureManager.backspaceGesture();
             }
         });
 
@@ -90,6 +96,7 @@ public class ButtonsManager extends BaseButtonsManager {
             if(bid == ButtonId.SAVE_SAMPLE) return true;
             if(bid == ButtonId.RECOGNIZE_RESET) return true;
             if(bid == ButtonId.MENU) return true;
+            if(bid == ButtonId.BACKSPACE) return true;
         }
         return false;
     }

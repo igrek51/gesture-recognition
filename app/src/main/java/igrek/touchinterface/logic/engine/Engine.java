@@ -54,7 +54,6 @@ public class Engine extends BaseEngine {
     }
 
 
-
     public void clickedPathPreferences() {
         inputmanager.inputScreenShow("Ścieżka do wzorców:", app.samplesPath, new InputHandlerCancellable() {
             @Override

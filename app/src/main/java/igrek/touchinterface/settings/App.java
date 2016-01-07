@@ -40,5 +40,5 @@ public class App {
     //  ZMIENNE APLIKACJI
     public Types.AppMode mode = Types.AppMode.MENU;
     public long gesture_edit_time = 0;
-    public String samplesPath = "Android/data/igrek.touchinterface/samples/";
+    public String samplesPath = "Android/data/igrek.touchinterface/samples";
 }

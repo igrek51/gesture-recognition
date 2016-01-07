@@ -32,8 +32,7 @@ public class TouchPanel {
     public boolean touchDown(float touch_x, float touch_y) {
         start_x = touch_x;
         start_y = touch_y;
-        engine.gestureManager.addCurrentGestureToHistory();
-        engine.gestureManager.addPointToCurrentTrack(touch_x, touch_y);
+        engine.gestureManager.newGestureDrawing(touch_x, touch_y);
         return true;
     }
 

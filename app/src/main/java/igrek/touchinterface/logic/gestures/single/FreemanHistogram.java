@@ -13,10 +13,10 @@ public class FreemanHistogram implements Serializable {
 
     public FreemanHistogram(Track t) {
         List<Point> points = t.getPoints();
-        if (!points.isEmpty()) {
-            calculateHistogram(points);
-        }
+        calculateHistogram(points);
     }
+
+    private FreemanHistogram() { }
 
     public int size(){
         return histogram.length;
@@ -71,12 +71,19 @@ public class FreemanHistogram implements Serializable {
         for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
             histogram[i] = 0;
         }
+        //osobne traktowanie kropki i zapisanie histogramu zerowego
+        if(points.size() <= Config.Gestures.max_dot_pixels){
+            //TODO: inne traktowanie kropki
+            return;
+        }
         for (int i = 0; i < points.size() - 1; i++) {
             float angle = angle(points.get(i), points.get(i + 1));
             int scopeNumber = getAngleScopeNumber(angle, Config.Gestures.FreemanChains.directions);
             histogram[scopeNumber]++;
         }
-        normalize();
+        if(Config.Gestures.FreemanChains.normalize_histogram){
+            normalize();
+        }
     }
 
     public void normalize() {
@@ -86,5 +93,17 @@ public class FreemanHistogram implements Serializable {
                 histogram[i] /= sum;
             }
         }
+    }
+
+    public static float[] getNewNormalized(float[] fh){
+        float sum = 0;
+        for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
+            sum += fh[i];
+        }
+        float[] nowy = new float[Config.Gestures.FreemanChains.directions];
+        for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
+            nowy[i] = fh[i] / sum;
+        }
+        return nowy;
     }
 }
