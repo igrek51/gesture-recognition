@@ -29,6 +29,8 @@ public class Correlator {
         //interpolacja liniowa
         return (Config.Gestures.Correlation.start_point_r2 - rd) / (Config.Gestures.Correlation.start_point_r2 - Config.Gestures.Correlation.start_point_r1);
     }
+    
+    //TODO: korelacja uwzględniająca rozmiar i skalowanie
 
     public static double singleGesturesCorrelation(SingleGesture sg1, SingleGesture sg2) {
         double correl_start_point = correlationStartPoint(sg1.getStart(), sg2.getStart());

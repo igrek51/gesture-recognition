@@ -10,13 +10,14 @@ public class FreemanHistogram implements Serializable {
     private static final long serialVersionUID = 2L;
 
     public float[] histogram = null;
+    //TODO: znormalizowany histogram i przechowywanie sumy pikseli
+    public int pixels = 0;
 
     public FreemanHistogram(Track t) {
         List<Point> points = t.getPoints();
+        pixels = points.size();
         calculateHistogram(points);
     }
-
-    private FreemanHistogram() { }
 
     public int size(){
         return histogram.length;
@@ -68,13 +69,15 @@ public class FreemanHistogram implements Serializable {
 
     private void calculateHistogram(List<Point> points) {
         histogram = new float[Config.Gestures.FreemanChains.directions];
+        //osobne traktowanie kropki i zapisanie histogramu równomiernego
+        if(points.size() <= Config.Gestures.max_dot_pixels){
+            for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
+                histogram[i] = ((float)1/Config.Gestures.FreemanChains.directions);
+            }
+            return;
+        }
         for (int i = 0; i < Config.Gestures.FreemanChains.directions; i++) {
             histogram[i] = 0;
-        }
-        //osobne traktowanie kropki i zapisanie histogramu zerowego
-        if(points.size() <= Config.Gestures.max_dot_pixels){
-            //TODO: inne traktowanie kropki
-            return;
         }
         for (int i = 0; i < points.size() - 1; i++) {
             float angle = angle(points.get(i), points.get(i + 1));
