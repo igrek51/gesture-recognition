@@ -10,9 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
-import igrek.touchinterface.logic.gestures.complex.RecognizedGesture;
-import igrek.touchinterface.logic.gestures.complex.SamplesContainer;
+import igrek.touchinterface.logic.gestures.collector.GestureCollector;
+import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
+import igrek.touchinterface.logic.gestures.sample.SamplesContainer;
 import igrek.touchinterface.logic.gestures.recognition.GestureRecognizer;
 import igrek.touchinterface.logic.gestures.recognition.exceptions.EmptyListException;
 import igrek.touchinterface.logic.gestures.recognition.exceptions.InsufficientGesturesException;
@@ -26,8 +27,7 @@ import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 
-//TODO: przegląd wzorców, punktów startu, usuwanie, manager
-//TODO: serializacja całej listy wzorców wraz z liczbami poprawnych i niepoprawnych rozpoznań
+//TODO: aktualizacja liczb poprawnych i niepoprawnych rozpoznań
 
 public class GestureManager {
     App app;
@@ -35,12 +35,14 @@ public class GestureManager {
     public Track currentTrack = null; //lista punktów w trakcie rysowania
     private List<InputGesture> lastInputGestures; //historia wprowadzonych pojedynczych gestów
     public List<RecognizedGesture> recognized;
+    public GestureCollector gestureCollector;
 
     public GestureManager() {
         app = App.geti();
         lastInputGestures = new ArrayList<>();
         recognized = new ArrayList<>();
         samplesContainer = new SamplesContainer();
+        gestureCollector = new GestureCollector();
         loadSamples();
     }
 
@@ -50,7 +52,7 @@ public class GestureManager {
 
     public void loadSamples() {
         String samplesPath = getSamplesPath().toString();
-        if(!app.engine.files.exists(samplesPath) || !app.engine.files.isFile(samplesPath)){
+        if (!app.engine.files.exists(samplesPath) || !app.engine.files.isFile(samplesPath)) {
             Output.info("Brak pliku z wzorcami: " + samplesPath);
             return;
         }
@@ -187,11 +189,18 @@ public class GestureManager {
                 }
                 recognized.add(new RecognizedGesture(singleGestures, result));
                 repeat = true;
-            } catch (EmptyListException | InsufficientGesturesException e) {
+            } catch (InsufficientGesturesException e) {
+                repeat = false;
+            } catch (EmptyListException e) {
                 repeat = false;
             } catch (NoGestureRecognized e) {
                 repeat = true;
                 Output.error(e.getMessage());
+                if (!wait) {
+                    //nierozpoznany - okno dialogowe z napisaniem co to było + opcjonalnie dodanie gestu do bazy
+                    app.engine.addUnrecognizedGesture();
+                    repeat = false;
+                }
             }
         } while (repeat);
     }
@@ -209,6 +218,7 @@ public class GestureManager {
         RecognizedGesture removed = recognized.get(recognized.size() - 1);
         recognized.remove(recognized.size() - 1);
         //TODO: obsłużenie usunięcia gestu - prawdopodobnie zły gest
+        //TODO: jeśli nie był usunięty - dobry gest - analiza po czasie
     }
 
     public void newGestureDrawing(float touch_x, float touch_y) {

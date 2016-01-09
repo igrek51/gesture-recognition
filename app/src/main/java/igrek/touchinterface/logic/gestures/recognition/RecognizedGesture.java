@@ -1,13 +1,13 @@
-package igrek.touchinterface.logic.gestures.complex;
+package igrek.touchinterface.logic.gestures.recognition;
 
 import java.util.List;
 
+import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
 import igrek.touchinterface.logic.gestures.single.SingleGesture;
 
 public class RecognizedGesture {
     private List<SingleGesture> inputSingleGestures;
     private ComplexGesture sample;
-    //TODO: akcje dla rozpoznanych gestów, nie tylko wprowadzanie znaków
     private String character;
 
     public RecognizedGesture(List<SingleGesture> inputSingleGestures, ComplexGesture sample) {

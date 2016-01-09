@@ -7,10 +7,9 @@ import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.output.Output;
 
 public class FreemanHistogram implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     public float[] histogram = null;
-    //TODO: znormalizowany histogram i przechowywanie sumy pikseli
     public int pixels = 0;
 
     public FreemanHistogram(Track t) {
@@ -84,9 +83,7 @@ public class FreemanHistogram implements Serializable {
             int scopeNumber = getAngleScopeNumber(angle, Config.Gestures.FreemanChains.directions);
             histogram[scopeNumber]++;
         }
-        if(Config.Gestures.FreemanChains.normalize_histogram){
-            normalize();
-        }
+        normalize();
     }
 
     public void normalize() {

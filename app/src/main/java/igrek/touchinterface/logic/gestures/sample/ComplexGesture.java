@@ -1,4 +1,4 @@
-package igrek.touchinterface.logic.gestures.complex;
+package igrek.touchinterface.logic.gestures.sample;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,11 +22,11 @@ public class ComplexGesture implements Serializable, Comparable {
     /**
      * czas dodania wzorca
      */
-    private Date creation_time;
+    private Date creationTime;
 
     public ComplexGesture(){
         singleGestures = new ArrayList<>();
-        creation_time = new Date();
+        creationTime = new Date();
     }
 
     public int compareTo(Object another) {
@@ -84,5 +84,9 @@ public class ComplexGesture implements Serializable, Comparable {
 
     public int getBalanceRecognitions(){
         return goodRecognitions - badRecognitions;
+    }
+
+    public Date getCreationTime(){
+        return creationTime;
     }
 }

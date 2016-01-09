@@ -51,7 +51,7 @@ public class Track {
 
     public static Track filteredTrack(Track t) {
         Track t2 = new Track();
-        int avg_points = Config.Gestures.avg_points;
+        int avg_points = Config.Gestures.filter_avg_points;
         int avg_points2;
         float x_sum, y_sum;
         for (int i = 0; i < t.length() - (avg_points - 1); i++) {

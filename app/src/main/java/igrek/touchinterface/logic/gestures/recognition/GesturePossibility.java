@@ -3,7 +3,7 @@ package igrek.touchinterface.logic.gestures.recognition;
 import java.util.ArrayList;
 import java.util.List;
 
-import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
 import igrek.touchinterface.system.output.Output;
 
 public class GesturePossibility {
@@ -22,16 +22,14 @@ public class GesturePossibility {
         return sample.size();
     }
 
-    public boolean isCompleted(int analyzed) {
-        return analyzed >= sample.size();
-    }
-
     public double getCorrelation() {
-        double product = 1;
+        if(correlations.isEmpty()) return 0;
+        //średnia arytmetyczna z pojedynczych gestów
+        double sum = 0;
         for (Double correlation : correlations) {
-            product *= correlation;
+            sum += correlation;
         }
-        return product;
+        return sum / correlations.size();
     }
 
     public Double getCorrelation(int index) {
@@ -52,7 +50,7 @@ public class GesturePossibility {
         StringBuilder sb = new StringBuilder();
         sb.append(sample.getCharacter() + ", " + sample.getName() + ", size=" + sample.size() + " : ");
         for (int i = 0; i < sample.size(); i++) {
-            sb.append((i == 0 ? "" : " x ") + getCorrelation(i));
+            sb.append((i == 0 ? "" : " , ") + getCorrelation(i));
         }
         if (sample.size() > 1) {
             sb.append(" = " + getCorrelation());

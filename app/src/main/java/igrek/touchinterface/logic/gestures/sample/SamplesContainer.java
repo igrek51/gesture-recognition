@@ -1,4 +1,4 @@
-package igrek.touchinterface.logic.gestures.complex;
+package igrek.touchinterface.logic.gestures.sample;
 
 import java.io.Serializable;
 import java.util.ArrayList;

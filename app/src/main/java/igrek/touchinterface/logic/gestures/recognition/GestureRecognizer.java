@@ -8,7 +8,7 @@ import igrek.touchinterface.logic.gestures.recognition.exceptions.EmptyListExcep
 import igrek.touchinterface.logic.gestures.recognition.exceptions.InsufficientGesturesException;
 import igrek.touchinterface.logic.gestures.recognition.exceptions.NoGestureRecognized;
 import igrek.touchinterface.logic.gestures.single.SingleGesture;
-import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
 import igrek.touchinterface.system.output.Output;
@@ -22,22 +22,31 @@ public class GestureRecognizer {
         this.samples = samples;
     }
 
+    /**
+     * @param correlation współczynnik korelacji gestu
+     * @param size złożoność gestu
+     * @return zmodyfikowany współczynnik korelacji tak, aby uwzględniał złożoność gestu
+     */
+    private double getCorrectedCorrelation(double correlation, int size){
+        return correlation;
+    }
+
     private ComplexGesture getBestPossibility(List<GesturePossibility> possibilities) {
         //1. kryterium: korelacja wszystkich pojedynczych gestów >= correl_min - spełnione wcześniej
-        //2. kryterium: największa złożoność gestu
-        //3. kryterium: największy wypadkowy współczynnik korelacji
+        //2.1 kryterium: największy wypadkowy współczynnik korelacji
+        //2.2 kryterium: największa złożoność gestu
+        //(2.1 i 2.2 mogą być jednocześnie)
+        //decyduje sumaryczny współczynnik korelacji
         GesturePossibility best = null;
-        int max_n = 0;
-        double max_correl = 0;
+        double corrected_correl, max_corrected_correl = 0;
         for (GesturePossibility possibility : possibilities) {
-            if (best == null || possibility.size() > max_n || (possibility.size() == max_n && possibility.getCorrelation() > max_correl)) {
+            corrected_correl = getCorrectedCorrelation(possibility.getCorrelation(), possibility.size());
+            if (best == null || corrected_correl  > max_corrected_correl) {
                 best = possibility;
-                max_n = possibility.size();
-                max_correl = possibility.getCorrelation();
+                max_corrected_correl = corrected_correl;
             }
         }
         if (best == null) return null;
-        Output.log("Max_correl = "+max_correl);
         return best.getComplexGesture();
     }
 
@@ -48,7 +57,6 @@ public class GestureRecognizer {
         if (samples.isEmpty()) {
             throw new EmptyListException("Brak wzorców do porównania");
         }
-        //TODO: synchronizacja z wątkiem grafiki
         //drzewo potencjalnych gestów
         List<GesturePossibility> possibilities = new ArrayList<>();
         //dla każdego wzorca
@@ -79,10 +87,6 @@ public class GestureRecognizer {
                 track.setCorrelation(level, correl);
                 //jeśli była to ostatnia część gestu
                 if (level == complex.size() - 1) {
-                    //jeśli spełnia warunek minimalnej korelacji dla złożonego gestu
-                    if (track.getCorrelation() < Config.Gestures.Correlation.complex_gesture_min_correlation) {
-                        break; //nie analizuj więcej tego gestu
-                    }
                     //zachowanie gestu w drzewie potencjalnych rozwiązań
                     possibilities.add(track);
                 }

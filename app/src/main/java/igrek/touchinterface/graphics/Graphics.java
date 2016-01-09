@@ -9,7 +9,7 @@ import igrek.touchinterface.logic.gestures.single.FreemanHistogram;
 import igrek.touchinterface.logic.gestures.single.Point;
 import igrek.touchinterface.logic.gestures.single.Track;
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.gestures.complex.RecognizedGesture;
+import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
 import igrek.touchinterface.logic.touchscreen.ITouchScreenController;
 import igrek.touchinterface.settings.App;
 import igrek.touchinterface.settings.Config;
@@ -147,7 +147,7 @@ public class Graphics extends CanvasView {
             float[] histogram = engine.gestureManager.getLastInputGesture().getSingleGesture().getHistogram();
             float[] normalized = FreemanHistogram.getNewNormalized(histogram);
             if (normalized != null) {
-                float hr2 = h * Config.Gestures.plot_height / 2;
+                float hr2 = h * Config.Gestures.histogram_plot_height / 2;
                 //układ współrzędnych
                 setColor(0x0000a0);
                 drawLine(0, h / 2 + hr2, w, h / 2 + hr2); //X
@@ -157,7 +157,7 @@ public class Graphics extends CanvasView {
                 for (int i = 0; i < normalized.length; i++) {
                     float left = w * i / normalized.length + 1;
                     float right = w * (i + 1) / normalized.length - 1;
-                    float top = h / 2 + hr2 - normalized[i] * h * Config.Gestures.plot_height;
+                    float top = h / 2 + hr2 - normalized[i] * h * Config.Gestures.histogram_plot_height;
                     fillRect(left, top, right, h / 2 + hr2);
                 }
             }

@@ -52,6 +52,7 @@ public class InputManager {
             }
         });
         editText = (EditText) layoutView.findViewById(R.id.inputKeyboardText);
+        editText.setSingleLine(false);
         textViewLabel = (TextView) layoutView.findViewById(R.id.label_text);
     }
 
@@ -66,7 +67,7 @@ public class InputManager {
         if(Integer.class.isAssignableFrom(value_type)) {
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
         }else {
-            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+            editText.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         }
         editText.requestFocus();
         //button cancel

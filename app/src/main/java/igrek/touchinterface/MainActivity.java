@@ -11,8 +11,6 @@ import android.view.WindowManager;
 import igrek.touchinterface.logic.engine.Engine;
 import igrek.touchinterface.system.output.Output;
 
-//TODO: release build
-
 public class MainActivity extends AppCompatActivity {
     private Engine engine;
 

@@ -2,9 +2,14 @@ package igrek.touchinterface.logic.engine;
 
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import igrek.touchinterface.logic.gestures.GestureManager;
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.gestures.complex.ComplexGesture;
+import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
+import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.single.SingleGesture;
 import igrek.touchinterface.system.keyinput.InputHandlerCancellable;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
@@ -15,9 +20,13 @@ import igrek.touchinterface.settings.Config;
 //TODO: mechanizm usuwania złych wzorców
 //TODO: zapisywanie liczby dobrze rozpoznanych wzorców i źle rozpoznanych wzorców
 //TODO: tryb debugowania - przyciski, tryb szybkiego pisania - release
-//TODO: po pewnym czasie nieaktywności, gesty są zdejmowane i następuje analiza bez czekania na dłuższe wzorce
+//TODO: statystyki: procent dobrze rozpoznanych, ilość odrzuceń na podstawie punktu startu, długości, współczynnika korelacji złożonego gestu, korelacja dla odrzucanych i dla nieodrzucanych
+//TODO: modyfikacja współczynników na podstawie statystyki - inteligencja
+//TODO: przycisk poprawiania gestu: zanotowanie błędnego rozpoznania i zastąpienie gestu
+//TODO: zapis listy wzorców przy wyjściu z aplikacji
 
 public class Engine extends BaseEngine {
+
     public Engine(AppCompatActivity activity) {
         super(activity);
     }
@@ -40,7 +49,7 @@ public class Engine extends BaseEngine {
         buttonsManager.executeClicked();
         //zdejmowanie gestu po braku aktywności
         if (gestureManager.currentTrack != null) {
-            if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_wait_time) {
+            if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_input_wait_time) {
                 gestureManager.addCurrentGestureToHistory();
                 if(app.mode == Types.AppMode.WRITING){
                     gestureManager.inputAndTryToRecognize(false);
@@ -70,6 +79,10 @@ public class Engine extends BaseEngine {
         inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputHandlerCancellable() {
             @Override
             public void onAccept(String input) {
+                if(input.length() == 0){
+                    Output.error("Nie podano znaku.");
+                    return;
+                }
                 saveCurrentSample2(input);
             }
         });
@@ -91,6 +104,50 @@ public class Engine extends BaseEngine {
                         complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
                     gestureManager.saveSample(complexGesture, gesture_character);
+                } catch (SoftErrorException e) {
+                    Output.error(e);
+                }
+            }
+        });
+    }
+
+    public void addUnrecognizedGesture() {
+        gestureManager.addCurrentGestureToHistory();
+        gestureManager.resetInputs();
+        inputmanager.inputScreenShow("Znak odpowiadający nierozpoznanemu gestowi:", new InputHandlerCancellable() {
+            @Override
+            public void onAccept(String input) {
+                if(input.length() == 0){
+                    Output.error("Nie podano znaku.");
+                    return;
+                }
+                addUnrecognizedGesture2(input);
+            }
+        });
+    }
+
+    public void addUnrecognizedGesture2(final String gesture_character) {
+        inputmanager.inputScreenShow("Liczba pojedynczych gestów:", Integer.class, new InputHandlerCancellable() {
+            @Override
+            public void onAccept(int input) {
+                try {
+                    if (input <= 0) {
+                        Output.errorThrow("Podano za małą iczbę gestów");
+                    }
+                    if (input > gestureManager.getLastInputsCount()) {
+                        Output.errorThrow("Podano za dużą liczbę gestów");
+                    }
+                    ComplexGesture complexGesture = new ComplexGesture();
+                    for (int i = input-1; i >= 0; i--) {
+                        complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
+                    }
+                    gestureManager.saveSample(complexGesture, gesture_character);
+                    //dopisanie nowego znaku
+                    List<SingleGesture> singleGestures = new ArrayList<>();
+                    for (int i = input-1; i >= 0; i--) {
+                        singleGestures.add(gestureManager.getLastInputGesture(i).getSingleGesture());
+                    }
+                    gestureManager.recognized.add(new RecognizedGesture(singleGestures, complexGesture));
                 } catch (SoftErrorException e) {
                     Output.error(e);
                 }
