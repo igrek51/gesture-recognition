@@ -58,7 +58,6 @@ public class Config {
         public static final int filter_avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int max_input_gestures_history = 8; //maksymalna liczba wpisanych pojedynczych gestów trzymana w historii
         public static final int max_dot_pixels = 15; //maksymalna liczba pikseli ścieżki, któa zostaje uznana za kropkę
-        public static final int max_samples_count = 10;
         public static class FreemanChains {
             public static final int directions = 8; //liczbia kierunków łańcuchów freemana
         }
@@ -75,6 +74,11 @@ public class Config {
             public static final double correlation_start_point_weight = 0.25;
             public static final double correlation_length_weight = 0.25;
             public static final double single_gesture_min_correlation = 0.85; //minimalny współczynnik korelacji dla pojedynczego gestu
+        }
+        public static class Collector {
+            public static final int max_samples_count = 10; //maksymalna liczba wzorców dla jednego znaku
+            public static final double complex_gesture_max_correlation_to_collect = 0.95; //maksymalny współczynnik korelacji dla rozpoznanego złożonego gestu, który zostaje dodany do bazy jako nowy wzorzec
+            public static final int max_ballance_to_remove = -3; //bilans rozpoznań, przy którym wzorzec zostaje usuwany
         }
     }
     //  USTAWIENIA UŻYTKOWNIKA

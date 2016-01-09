@@ -14,6 +14,7 @@ import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.settings.preferences.Preferences;
 import igrek.touchinterface.system.files.Files;
 import igrek.touchinterface.system.keyinput.InputManager;
+import igrek.touchinterface.system.output.SoftErrorException;
 import igrek.touchinterface.system.timer.ITimerRunner;
 import igrek.touchinterface.system.timer.TimerManager;
 import igrek.touchinterface.settings.*;
@@ -117,11 +118,16 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
     }
 
     public void quit() {
-        Output.info("Zamykanie...");
         if (!running) { //próba ponownego zamknięcia
             Output.log("Zamykanie aplikacji (2) - anulowanie");
             return;
         }
+        try {
+            gestureManager.saveSamples();
+        }catch(SoftErrorException e){
+            Output.error(e);
+        }
+        Output.info("Zamykanie...");
         running = false;
         timer.stop();
         Output.log("Zamykanie aplikacji");

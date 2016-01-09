@@ -10,10 +10,10 @@ import java.util.Collections;
 import java.util.List;
 
 import igrek.touchinterface.logic.Types;
-import igrek.touchinterface.logic.gestures.collector.GestureCollector;
-import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.samples.SamplesCollector;
+import igrek.touchinterface.logic.gestures.samples.ComplexGesture;
 import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
-import igrek.touchinterface.logic.gestures.sample.SamplesContainer;
+import igrek.touchinterface.logic.gestures.samples.SamplesContainer;
 import igrek.touchinterface.logic.gestures.recognition.GestureRecognizer;
 import igrek.touchinterface.logic.gestures.recognition.exceptions.EmptyListException;
 import igrek.touchinterface.logic.gestures.recognition.exceptions.InsufficientGesturesException;
@@ -27,23 +27,21 @@ import igrek.touchinterface.settings.App;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 
-//TODO: aktualizacja liczb poprawnych i niepoprawnych rozpoznań
-
 public class GestureManager {
     App app;
     public SamplesContainer samplesContainer;
     public Track currentTrack = null; //lista punktów w trakcie rysowania
     private List<InputGesture> lastInputGestures; //historia wprowadzonych pojedynczych gestów
     public List<RecognizedGesture> recognized;
-    public GestureCollector gestureCollector;
+    public SamplesCollector samplesCollector;
 
     public GestureManager() {
         app = App.geti();
         lastInputGestures = new ArrayList<>();
         recognized = new ArrayList<>();
         samplesContainer = new SamplesContainer();
-        gestureCollector = new GestureCollector();
         loadSamples();
+        samplesCollector = new SamplesCollector();
     }
 
     public Path getSamplesPath() {
@@ -71,6 +69,9 @@ public class GestureManager {
     }
 
     public void saveSamples() throws SoftErrorException {
+        samplesCollector.limitSamples();
+        Output.log("Zapisywanie wzorców do pliku....");
+        sortSamples();
         String samplesPath = getSamplesPath().toString();
         try {
             FileOutputStream fileOut = new FileOutputStream(samplesPath);
@@ -95,34 +96,30 @@ public class GestureManager {
         }
     }
 
-    public void deleteSample(ComplexGesture g) throws SoftErrorException {
+    public void removeSample(ComplexGesture g) throws SoftErrorException {
         //usunięcie z listy
         if (!samplesContainer.getSamples().remove(g)) {
             Output.errorThrow("Nie znaleziono wzorca do usunięcia na liście.");
         }
-        //zapis nowych wzorców
-        saveSamples();
         Output.info("Usunięto wzorzec: " + g.getName());
     }
 
-    public void deleteSample(String name) throws SoftErrorException {
+    public void removeSample(String name) throws SoftErrorException {
         ComplexGesture sample = samplesContainer.findByName(name);
         if (sample == null) {
             Output.errorThrow("Nie znaleziono wzorca o nazwie: " + name);
         }
-        deleteSample(sample);
+        removeSample(sample);
     }
 
-    public void saveSample(ComplexGesture gesture, String character) throws SoftErrorException {
+    public void addSample(ComplexGesture gesture, String character) throws SoftErrorException {
         //wyznaczanie nazwy
         String name = samplesContainer.getNextName(character);
         //serializacja wzorca i zapisanie histogramu
         gesture.setCharacter(character);
         gesture.setName(name);
         samplesContainer.getSamples().add(gesture);
-        sortSamples();
-        saveSamples();
-        Output.info("Zapisano wzorzec znaku (" + character + "): " + name);
+        Output.info("Dodano wzorzec znaku (" + character + "): " + name);
     }
 
 
@@ -183,20 +180,17 @@ public class GestureManager {
             try {
                 ComplexGesture result = recognizer.recognizeComplexGesture(unrecognized, wait);
                 //gest rozpoznany
-                List<SingleGesture> singleGestures = new ArrayList<>();
-                for (int i = 0; i < result.size(); i++) {
-                    singleGestures.add(unrecognized.get(i).getSingleGesture());
-                }
-                recognized.add(new RecognizedGesture(singleGestures, result));
+                onCorrectRecognition(result, unrecognized, recognizer);
                 repeat = true;
             } catch (InsufficientGesturesException e) {
                 repeat = false;
             } catch (EmptyListException e) {
                 repeat = false;
             } catch (NoGestureRecognized e) {
-                repeat = true;
                 Output.error(e.getMessage());
-                if (!wait) {
+                if (wait) {
+                    repeat = true;
+                } else {
                     //nierozpoznany - okno dialogowe z napisaniem co to było + opcjonalnie dodanie gestu do bazy
                     app.engine.addUnrecognizedGesture();
                     repeat = false;
@@ -205,20 +199,66 @@ public class GestureManager {
         } while (repeat);
     }
 
+    public void onCorrectRecognition(ComplexGesture result, List<InputGesture> unrecognized, GestureRecognizer recognizer) {
+        List<SingleGesture> singleGestures = new ArrayList<>();
+        for (int i = 0; i < result.size(); i++) {
+            singleGestures.add(unrecognized.get(i).getSingleGesture());
+        }
+        RecognizedGesture recognizedGesture = new RecognizedGesture(singleGestures, result);
+        //zwiększenie liczby poprawnych rozpoznań dla gestu
+        result.addGoodRecognition();
+        //jeśli gest został rozpoznany słabo
+        if(recognizer.getBestCorrelation() <= Config.Gestures.Collector.complex_gesture_max_correlation_to_collect){
+            //dodanie gestu do bazy jako nowy wzorzec
+            try {
+                ComplexGesture newSample = new ComplexGesture();
+                newSample.addAll(singleGestures);
+                addSample(newSample, result.getCharacter());
+                //zapisanie faktu, że został automatycznie dodany
+                recognizedGesture.setAddedAutomatically(true);
+                recognizedGesture.setAddedAutomaticallySample(newSample);
+                Output.log("Dodano automatycznie wzorzec: " + newSample.getName());
+            } catch (SoftErrorException e) {
+                Output.error(e);
+            }
+        }
+        recognized.add(recognizedGesture);
+    }
+
     public void resetInputs() {
         //wysztkie inputy jako analyzed
         for (InputGesture input : lastInputGestures) {
             input.setAnalyzed(true);
         }
-        Output.info("Input zresetowany.");
+        Output.log("Input zresetowany.");
     }
 
     public void backspaceGesture() {
         if (recognized.isEmpty()) return;
         RecognizedGesture removed = recognized.get(recognized.size() - 1);
         recognized.remove(recognized.size() - 1);
-        //TODO: obsłużenie usunięcia gestu - prawdopodobnie zły gest
-        //TODO: jeśli nie był usunięty - dobry gest - analiza po czasie
+        //jeśli gest został dodany automatycznie
+        if(removed.isAddedAutomatically()){
+            //natychamiastowe usunięcie nowo zapisanego gestu
+            try{
+                ComplexGesture addedAutomatically = removed.getAddedAutomaticallySample();
+                Output.info("Usuwanie wzorca dodanego automatycznie: "+addedAutomatically.getName());
+                removeSample(addedAutomatically);
+            }catch(SoftErrorException e){
+                Output.error(e);
+            }
+        }
+        //obsłużenie usunięcia gestu - zapisanie złego rozpoznania
+        removed.getSample().addBadRecognition();
+        //usuwanie wzorca ze złym bilansem
+        if(removed.getSample().getBalanceRecognitions() <= Config.Gestures.Collector.max_ballance_to_remove) {
+            try{
+                Output.info("Usuwanie wzorca z powodu niskiego bilansu rozpoznań: "+removed.getCharacter());
+                removeSample(removed.getSample());
+            }catch(SoftErrorException e){
+                Output.error(e);
+            }
+        }
     }
 
     public void newGestureDrawing(float touch_x, float touch_y) {
@@ -227,5 +267,11 @@ public class GestureManager {
         }
         addCurrentGestureToHistory();
         addPointToCurrentTrack(touch_x, touch_y);
+    }
+
+    public void correctSample(){
+        //poprawienie ostatnio rozpoznanego wzorca
+        backspaceGesture();
+        app.engine.addUnrecognizedGesture();
     }
 }

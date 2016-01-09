@@ -3,7 +3,7 @@ package igrek.touchinterface.logic.gestures.recognition;
 import java.util.ArrayList;
 import java.util.List;
 
-import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.samples.ComplexGesture;
 import igrek.touchinterface.system.output.Output;
 
 public class GesturePossibility {

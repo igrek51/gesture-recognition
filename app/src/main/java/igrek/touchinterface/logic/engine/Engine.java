@@ -8,22 +8,14 @@ import java.util.List;
 import igrek.touchinterface.logic.gestures.GestureManager;
 import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
-import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.samples.ComplexGesture;
 import igrek.touchinterface.logic.gestures.single.SingleGesture;
 import igrek.touchinterface.system.keyinput.InputHandlerCancellable;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
 import igrek.touchinterface.settings.Config;
 
-//TODO: inteligencja: usuwanie wzorców, które prowadzą do błędnego rozpoznawania
-//TODO: uczenie: dodawanie wszystkich wzorców, usuwanie wzorców, które są rzadko podstawą do rozpoznania
-//TODO: mechanizm usuwania złych wzorców
-//TODO: zapisywanie liczby dobrze rozpoznanych wzorców i źle rozpoznanych wzorców
-//TODO: tryb debugowania - przyciski, tryb szybkiego pisania - release
-//TODO: statystyki: procent dobrze rozpoznanych, ilość odrzuceń na podstawie punktu startu, długości, współczynnika korelacji złożonego gestu, korelacja dla odrzucanych i dla nieodrzucanych
-//TODO: modyfikacja współczynników na podstawie statystyki - inteligencja
-//TODO: przycisk poprawiania gestu: zanotowanie błędnego rozpoznania i zastąpienie gestu
-//TODO: zapis listy wzorców przy wyjściu z aplikacji
+//TODO: statystyki: procent dobrze rozpoznanych, ilość odrzuceń na podstawie punktu startu, długości, współczynnika korelacji złożonego gestu, korelacja dla odrzucanych i dla nieodrzucanych, modyfikacja współczynników na podstawie statystyki - inteligencja
 
 public class Engine extends BaseEngine {
 
@@ -34,7 +26,7 @@ public class Engine extends BaseEngine {
     public void init2() {
         gestureManager = new GestureManager();
         try {
-            setAppMode(Types.AppMode.MENU);
+            setAppMode(Types.AppMode.WRITING);
         } catch (Exception e) {
             Output.error(e);
         }
@@ -43,7 +35,6 @@ public class Engine extends BaseEngine {
     }
     
     public void update2() throws Exception {
-        //TODO: repaint tylko w potrzebie a nie w każdej klatce
         graphics.repaintRequest();
         //obsługa przycisków
         buttonsManager.executeClicked();
@@ -103,7 +94,7 @@ public class Engine extends BaseEngine {
                     for (int i = input-1; i >= 0; i--) {
                         complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
-                    gestureManager.saveSample(complexGesture, gesture_character);
+                    gestureManager.addSample(complexGesture, gesture_character);
                 } catch (SoftErrorException e) {
                     Output.error(e);
                 }
@@ -141,7 +132,7 @@ public class Engine extends BaseEngine {
                     for (int i = input-1; i >= 0; i--) {
                         complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
-                    gestureManager.saveSample(complexGesture, gesture_character);
+                    gestureManager.addSample(complexGesture, gesture_character);
                     //dopisanie nowego znaku
                     List<SingleGesture> singleGestures = new ArrayList<>();
                     for (int i = input-1; i >= 0; i--) {
@@ -160,7 +151,7 @@ public class Engine extends BaseEngine {
             @Override
             public void onAccept(String inputText) {
                 try {
-                    gestureManager.deleteSample(inputText);
+                    gestureManager.removeSample(inputText);
                 } catch (SoftErrorException e) {
                     Output.error(e);
                 }

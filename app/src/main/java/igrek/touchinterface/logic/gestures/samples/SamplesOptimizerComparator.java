@@ -1,10 +1,10 @@
-package igrek.touchinterface.logic.gestures.collector;
+package igrek.touchinterface.logic.gestures.samples;
 
 import java.util.Comparator;
 
-import igrek.touchinterface.logic.gestures.sample.ComplexGesture;
+import igrek.touchinterface.logic.gestures.samples.ComplexGesture;
 
-public class GestureOptimizerComparator implements Comparator<ComplexGesture> {
+public class SamplesOptimizerComparator implements Comparator<ComplexGesture> {
     @Override
     public int compare(ComplexGesture a, ComplexGesture b) {
         int diff = b.getBalanceRecognitions() - a.getBalanceRecognitions();

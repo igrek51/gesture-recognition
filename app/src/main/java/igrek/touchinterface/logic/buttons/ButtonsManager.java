@@ -15,7 +15,7 @@ public class ButtonsManager extends BaseButtonsManager {
         SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE, DELETE_SAMPLE,
         RECOGNIZE_SAMPLE, RECOGNIZE_RESET,
         MENU, WRITING,
-        BACKSPACE
+        BACKSPACE, CORRECT_SAMPLE
     }
 
     public void initButtons(){
@@ -39,7 +39,7 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.setAppMode(Types.AppMode.MENU);
             }
         });
-        add("Zapisz wzorzec", ButtonId.SAVE_SAMPLE, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
+        Button save_sample = add("Zapisz wzorzec", ButtonId.SAVE_SAMPLE, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
                 engine.saveCurrentSample();
             }
@@ -74,6 +74,11 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.gestureManager.backspaceGesture();
             }
         });
+        add("Popraw", ButtonId.CORRECT_SAMPLE, new RelativeGeometry(save_sample.leftRelative(), save_sample.bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+            public void clicked() throws Exception {
+                engine.gestureManager.correctSample();
+            }
+        });
 
     }
 
@@ -97,6 +102,7 @@ public class ButtonsManager extends BaseButtonsManager {
             if(bid == ButtonId.RECOGNIZE_RESET) return true;
             if(bid == ButtonId.MENU) return true;
             if(bid == ButtonId.BACKSPACE) return true;
+            if(bid == ButtonId.CORRECT_SAMPLE) return true;
         }
         return false;
     }

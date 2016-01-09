@@ -1,4 +1,4 @@
-package igrek.touchinterface.logic.gestures.sample;
+package igrek.touchinterface.logic.gestures.samples;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import igrek.touchinterface.logic.gestures.single.SingleGesture;
+import igrek.touchinterface.system.output.Output;
 
 /**
  * gest złożony z wielu pojedynczych gestów - wzorzec
@@ -38,6 +39,12 @@ public class ComplexGesture implements Serializable, Comparable {
         singleGestures.add(sg);
     }
 
+    public void addAll(List<SingleGesture> singleGestures){
+        for(SingleGesture sg : singleGestures){
+            add(sg);
+        }
+    }
+
     /**
      * @return złożoność gestu
      */
@@ -68,6 +75,7 @@ public class ComplexGesture implements Serializable, Comparable {
 
     public void addGoodRecognition(){
         goodRecognitions++;
+        Output.log("Dobre rozpoznanie gestu ("+name+"): "+goodRecognitions+" - "+badRecognitions+" = "+getBalanceRecognitions());
     }
 
     public int getGoodRecognitions() {
@@ -75,7 +83,9 @@ public class ComplexGesture implements Serializable, Comparable {
     }
 
     public void addBadRecognition(){
+        goodRecognitions--;
         badRecognitions++;
+        Output.log("Niepoprawne rozpoznanie gestu ("+name+"): "+goodRecognitions+" - "+badRecognitions+" = "+getBalanceRecognitions());
     }
 
     public int getBadRecognitions() {
