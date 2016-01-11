@@ -55,9 +55,9 @@ public class Config {
     public static class Gestures {
         public static final float histogram_plot_height = 0.4f; //relatywna wysokość wykresu histogramu na ekranie
         public static final int max_input_wait_time = 800; //czas braku aktywności po jakim gest jest zdejmowany z ekranu [ms]
-        public static final int filter_avg_points = 15; //liczba pikseli do uśrednienia przy filtrowaniu
+        public static final int filter_avg_points = 20; //liczba pikseli do uśrednienia przy filtrowaniu
         public static final int max_input_gestures_history = 8; //maksymalna liczba wpisanych pojedynczych gestów trzymana w historii
-        public static final int max_dot_pixels = 15; //maksymalna liczba pikseli ścieżki, któa zostaje uznana za kropkę
+        public static final int max_dot_pixels = 20; //maksymalna liczba pikseli ścieżki, któa zostaje uznana za kropkę
         public static class FreemanChains {
             public static final int directions = 8; //liczbia kierunków łańcuchów freemana
         }
@@ -76,8 +76,8 @@ public class Config {
             public static final double single_gesture_min_correlation = 0.85; //minimalny współczynnik korelacji dla pojedynczego gestu
         }
         public static class Collector {
-            public static final int max_samples_count = 10; //maksymalna liczba wzorców dla jednego znaku
-            public static final double complex_gesture_max_correlation_to_collect = 0.95; //maksymalny współczynnik korelacji dla rozpoznanego złożonego gestu, który zostaje dodany do bazy jako nowy wzorzec
+            public static final int max_samples_count = 25; //maksymalna liczba wzorców dla jednego znaku
+            public static final double complex_gesture_max_correlation_to_collect = 0.96; //maksymalny współczynnik korelacji dla rozpoznanego złożonego gestu, który zostaje dodany do bazy jako nowy wzorzec
             public static final int max_ballance_to_remove = -3; //bilans rozpoznań, przy którym wzorzec zostaje usuwany
         }
     }

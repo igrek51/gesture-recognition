@@ -42,7 +42,7 @@ public class Engine extends BaseEngine {
         if (gestureManager.currentTrack != null) {
             if (System.currentTimeMillis() > app.gesture_edit_time + Config.Gestures.max_input_wait_time) {
                 gestureManager.addCurrentGestureToHistory();
-                if(app.mode == Types.AppMode.WRITING){
+                if (app.mode == Types.AppMode.WRITING) {
                     gestureManager.inputAndTryToRecognize(false);
                 }
             }
@@ -70,7 +70,7 @@ public class Engine extends BaseEngine {
         inputmanager.inputScreenShow("Znak odpowiadający gestowi:", new InputHandlerCancellable() {
             @Override
             public void onAccept(String input) {
-                if(input.length() == 0){
+                if (input.length() == 0) {
                     Output.error("Nie podano znaku.");
                     return;
                 }
@@ -91,7 +91,7 @@ public class Engine extends BaseEngine {
                         Output.errorThrow("Podano za dużą liczbę gestów");
                     }
                     ComplexGesture complexGesture = new ComplexGesture();
-                    for (int i = input-1; i >= 0; i--) {
+                    for (int i = input - 1; i >= 0; i--) {
                         complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
                     gestureManager.addSample(complexGesture, gesture_character);
@@ -108,7 +108,7 @@ public class Engine extends BaseEngine {
         inputmanager.inputScreenShow("Znak odpowiadający nierozpoznanemu gestowi:", new InputHandlerCancellable() {
             @Override
             public void onAccept(String input) {
-                if(input.length() == 0){
+                if (input.length() == 0) {
                     Output.error("Nie podano znaku.");
                     return;
                 }
@@ -129,13 +129,61 @@ public class Engine extends BaseEngine {
                         Output.errorThrow("Podano za dużą liczbę gestów");
                     }
                     ComplexGesture complexGesture = new ComplexGesture();
-                    for (int i = input-1; i >= 0; i--) {
+                    for (int i = input - 1; i >= 0; i--) {
                         complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
                     gestureManager.addSample(complexGesture, gesture_character);
                     //dopisanie nowego znaku
                     List<SingleGesture> singleGestures = new ArrayList<>();
-                    for (int i = input-1; i >= 0; i--) {
+                    for (int i = input - 1; i >= 0; i--) {
+                        singleGestures.add(gestureManager.getLastInputGesture(i).getSingleGesture());
+                    }
+                    gestureManager.recognized.add(new RecognizedGesture(singleGestures, complexGesture));
+                } catch (SoftErrorException e) {
+                    Output.error(e);
+                }
+            }
+        });
+    }
+
+    public void addCorrectedGesture() {
+        gestureManager.addCurrentGestureToHistory();
+        gestureManager.resetInputs();
+        inputmanager.inputScreenShow("Znak odpowiadający poprawianemu gestowi:", new InputHandlerCancellable() {
+            @Override
+            public void onAccept(String input) {
+                if (input.length() == 0) {
+                    Output.error("Nie podano znaku.");
+                    return;
+                }
+                addCorrectedGesture2(input);
+            }
+        });
+    }
+
+    public void addCorrectedGesture2(final String gesture_character) {
+        inputmanager.inputScreenShow("Liczba pojedynczych gestów:", Integer.class, new InputHandlerCancellable() {
+            @Override
+            public void onAccept(int input) {
+                try {
+                    if (input <= 0) {
+                        Output.errorThrow("Podano za małą iczbę gestów");
+                    }
+                    if (input > gestureManager.getLastInputsCount()) {
+                        Output.errorThrow("Podano za dużą liczbę gestów");
+                    }
+                    //usunięcie pozostałych gestów w przypadku dłuższego niż 1
+                    for (int i = 1; i < input; i++) {
+                        gestureManager.backspaceGesture();
+                    }
+                    ComplexGesture complexGesture = new ComplexGesture();
+                    for (int i = input - 1; i >= 0; i--) {
+                        complexGesture.add(gestureManager.getLastInputGesture(i).getSingleGesture());
+                    }
+                    gestureManager.addSample(complexGesture, gesture_character);
+                    //dopisanie nowego znaku
+                    List<SingleGesture> singleGestures = new ArrayList<>();
+                    for (int i = input - 1; i >= 0; i--) {
                         singleGestures.add(gestureManager.getLastInputGesture(i).getSingleGesture());
                     }
                     gestureManager.recognized.add(new RecognizedGesture(singleGestures, complexGesture));

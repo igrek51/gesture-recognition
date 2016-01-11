@@ -272,6 +272,6 @@ public class GestureManager {
     public void correctSample(){
         //poprawienie ostatnio rozpoznanego wzorca
         backspaceGesture();
-        app.engine.addUnrecognizedGesture();
+        app.engine.addCorrectedGesture();
     }
 }
