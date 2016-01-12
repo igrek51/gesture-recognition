@@ -173,7 +173,9 @@ public class Engine extends BaseEngine {
                         Output.errorThrow("Podano za dużą liczbę gestów");
                     }
                     //usunięcie pozostałych gestów w przypadku dłuższego niż 1
-                    for (int i = 1; i < input; i++) {
+                    Output.log("addCorrectedGesture2: "+input);
+                    for (int i = 0; i < input; i++) {
+                        Output.log("addCorrectedGesture2: "+i);
                         gestureManager.backspaceGesture();
                     }
                     ComplexGesture complexGesture = new ComplexGesture();

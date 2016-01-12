@@ -226,7 +226,7 @@ public class GestureManager {
     }
 
     public void resetInputs() {
-        //wysztkie inputy jako analyzed
+        //wszystkie inputy jako analyzed
         for (InputGesture input : lastInputGestures) {
             input.setAnalyzed(true);
         }
@@ -271,7 +271,6 @@ public class GestureManager {
 
     public void correctSample(){
         //poprawienie ostatnio rozpoznanego wzorca
-        backspaceGesture();
         app.engine.addCorrectedGesture();
     }
 }
