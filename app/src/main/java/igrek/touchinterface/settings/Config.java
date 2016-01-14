@@ -26,21 +26,27 @@ public class Config {
     public static final int timer_fps0 = 10;
     //  BUTTONY
     public static class Buttons {
-        public static final int fontsize = 24;
-        public static final int height = 60;
+        public static final int fontsize = 12;
+        public static final int height = 15;
         public static final int padding_h = 10;
-        public static final int padding_v = 10;
+        public static final int padding_v = 1;
     }
     //  CZCIONKI
     public static class Fonts {
-        public static final int fontsize = 24;
-        public static final int lineheight = 25;
+        public static final int fontsize = 12;
+        public static final int lineheight = 13;
     }
     //  KOLORY
     public static class Colors {
-        public static final int background = 0x000000;
-        public static final int echo_text = 0xa000f000;
-        public static final int signature = 0x003000;
+        public static final int background = 0xffffff;
+        public static final int echo_text = 0xa000a000;
+        public static final int signature = 0xfefefe;
+        public static final int track = 0x000000;
+        public static final int minitracks = 0x000000;
+        public static final int histogram_axis = 0x000000;
+        public static final int histogram_axis_aux = 0xa0a0a0;
+        public static final int histogram_bin = 0x00a0a0;
+        public static final int histogram_index = 0x505050;
         public static class Buttons {
             public static final int background = 0x303030;
             public static final int background_clicked = 0x202020;

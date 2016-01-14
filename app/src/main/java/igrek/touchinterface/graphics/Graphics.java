@@ -106,7 +106,7 @@ public class Graphics extends CanvasView {
         if (engine.gestureManager.currentTrack != null) {
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(1);
-            setColor(0xffffff);
+            setColor(Config.Colors.track);
             Point last = null;
             for (Point p : engine.gestureManager.currentTrack.getPoints()) {
                 if (last != null) {
@@ -133,12 +133,18 @@ public class Graphics extends CanvasView {
     }
 
     private void drawMiniTracks() {
-        setColor(0xa0a0a0);
+        setColor(Config.Colors.minitracks);
+        /*
         for (int i = 4 - 1; i >= 0; i--) {
             if (engine.gestureManager.getLastInputGesture(i) != null) {
                 Track track = engine.gestureManager.getLastInputGesture(i).getTrack();
                 drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 3 / 4);
             }
+        }
+        */
+        if (engine.gestureManager.getLastInputGesture() != null) {
+            Track track = engine.gestureManager.getLastInputGesture().getTrack();
+            drawTrack(track, 1f, 0, 0);
         }
     }
 
@@ -147,18 +153,25 @@ public class Graphics extends CanvasView {
             float[] histogram = engine.gestureManager.getLastInputGesture().getSingleGesture().getHistogram();
             float[] normalized = FreemanHistogram.getNewNormalized(histogram);
             if (normalized != null) {
+                float y_offset = h*3/4;
                 float hr2 = h * Config.Gestures.histogram_plot_height / 2;
                 //układ współrzędnych
-                setColor(0x0000a0);
-                drawLine(0, h / 2 + hr2, w, h / 2 + hr2); //X
-                drawLine(1, h / 2 - hr2, 1, h / 2 + hr2); //Y
+                setColor(Config.Colors.histogram_axis);
+                drawLine(0, y_offset + hr2, w, y_offset + hr2); //X
+                drawLine(1, y_offset - hr2, 1, y_offset + hr2); //Y
+                setColor(Config.Colors.histogram_axis_aux);
+                drawLine(0, y_offset - hr2, w, y_offset - hr2); //Y max
                 //wykres
-                setColor(0x00a0a0);
+                setFont(Types.Font.FONT_BOLD);
                 for (int i = 0; i < normalized.length; i++) {
+                    setColor(Config.Colors.histogram_bin);
                     float left = w * i / normalized.length + 1;
                     float right = w * (i + 1) / normalized.length - 1;
-                    float top = h / 2 + hr2 - normalized[i] * h * Config.Gestures.histogram_plot_height;
-                    fillRect(left, top, right, h / 2 + hr2);
+                    float top = y_offset + hr2 - normalized[i] * h * Config.Gestures.histogram_plot_height;
+                    fillRect(left, top, right, y_offset + hr2);
+                    //cyferka
+                    setColor(Config.Colors.histogram_index);
+                    drawText(""+i, (left+right)/2, y_offset + hr2 + 5, Types.Align.HCENTER);
                 }
             }
         }
