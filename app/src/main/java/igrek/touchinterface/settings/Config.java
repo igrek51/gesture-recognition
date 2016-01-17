@@ -26,27 +26,28 @@ public class Config {
     public static final int timer_fps0 = 10;
     //  BUTTONY
     public static class Buttons {
-        public static final int fontsize = 12;
-        public static final int height = 15;
-        public static final int padding_h = 10;
-        public static final int padding_v = 1;
+        public static int fontsize = 24;
+        public static int height = 60;
+        public static int padding_h = 10;
+        public static int padding_v = 10;
     }
     //  CZCIONKI
     public static class Fonts {
-        public static final int fontsize = 12;
-        public static final int lineheight = 13;
+        public static int fontsize = 24;
+        public static int lineheight = 25;
     }
     //  KOLORY
     public static class Colors {
-        public static final int background = 0xffffff;
-        public static final int echo_text = 0xa000a000;
-        public static final int signature = 0xfefefe;
+        public static int background = 0x000000;
+        public static int echo_text = 0xff008000;
+        public static int signature = 0x003000;
         public static final int track = 0x000000;
-        public static final int minitracks = 0x000000;
+        public static final int minitracks = 0x707070;
         public static final int histogram_axis = 0x000000;
         public static final int histogram_axis_aux = 0xa0a0a0;
         public static final int histogram_bin = 0x00a0a0;
         public static final int histogram_index = 0x505050;
+        public static final int recognized_text = 0xa08000;
         public static class Buttons {
             public static final int background = 0x303030;
             public static final int background_clicked = 0x202020;
@@ -89,4 +90,20 @@ public class Config {
     }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
+    //Zestaw ustawień: 0 - samsung galaxy grand prime (DEFAULT), 1 - emulator Android
+    public static final int config_set = 1;
+    //nadpisanie parametrów dla innego zestawu
+    public Config() {
+        if (config_set == 1) {
+            Fonts.fontsize = 13;
+            Fonts.lineheight = 14;
+            Buttons.fontsize = 13;
+            Buttons.height = 24;
+            Buttons.padding_h = 10;
+            Buttons.padding_v = 5;
+            Colors.background = 0xffffff;
+            Colors.echo_text = 0xa000a000;
+            Colors.signature = 0xfefefe;
+        }
+    }
 }

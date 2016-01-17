@@ -226,6 +226,7 @@ public class GestureManager {
     }
 
     public void resetInputs() {
+        addCurrentGestureToHistory();
         //wszystkie inputy jako analyzed
         for (InputGesture input : lastInputGestures) {
             input.setAnalyzed(true);

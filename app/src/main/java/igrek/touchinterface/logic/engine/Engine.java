@@ -26,7 +26,7 @@ public class Engine extends BaseEngine {
     public void init2() {
         gestureManager = new GestureManager();
         try {
-            setAppMode(Types.AppMode.MENU);
+            setAppMode(Types.AppMode.WRITING);
         } catch (Exception e) {
             Output.error(e);
         }

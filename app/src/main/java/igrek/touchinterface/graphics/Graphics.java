@@ -134,17 +134,11 @@ public class Graphics extends CanvasView {
 
     private void drawMiniTracks() {
         setColor(Config.Colors.minitracks);
-        /*
         for (int i = 4 - 1; i >= 0; i--) {
             if (engine.gestureManager.getLastInputGesture(i) != null) {
                 Track track = engine.gestureManager.getLastInputGesture(i).getTrack();
-                drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 3 / 4);
+                drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 1 / 4);
             }
-        }
-        */
-        if (engine.gestureManager.getLastInputGesture() != null) {
-            Track track = engine.gestureManager.getLastInputGesture().getTrack();
-            drawTrack(track, 1f, 0, 0);
         }
     }
 
@@ -178,7 +172,7 @@ public class Graphics extends CanvasView {
     }
 
     private void drawRecognized(){
-        setColor(0xa0a000);
+        setColor(Config.Colors.recognized_text);
         setFont(Types.Font.FONT_MONOSPACE);
         StringBuilder sb = new StringBuilder();
         sb.append("Rozpoznany tekst: \n");
@@ -186,6 +180,6 @@ public class Graphics extends CanvasView {
             sb.append(recognized.getCharacter());
         }
         String splited = splitTextMultiline(sb.toString(), w);
-        drawTextMultiline(splited, 0, 300, Config.Fonts.lineheight, Types.Align.LEFT);
+        drawTextMultiline(splited, 0, h/4, Config.Fonts.lineheight, Types.Align.LEFT);
     }
 }

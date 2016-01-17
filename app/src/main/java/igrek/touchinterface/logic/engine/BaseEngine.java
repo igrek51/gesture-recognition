@@ -42,6 +42,7 @@ public abstract class BaseEngine implements ITimerRunner, ITouchScreenController
     public BaseEngine(AppCompatActivity activity) {
         this.activity = activity;
         engine = (Engine) this;
+        new Config();
         //schowanie paska tytułu
         if (Config.Screen.hide_taskbar) {
             if (activity.getSupportActionBar() != null) {
