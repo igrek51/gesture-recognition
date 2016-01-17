@@ -112,6 +112,11 @@ public class GestureManager {
         removeSample(sample);
     }
 
+    public void clearSamples(){
+        samplesContainer.getSamples().clear();
+        Output.info("Usunięto wszystkie wzorce.");
+    }
+
     public void addSample(ComplexGesture gesture, String character) throws SoftErrorException {
         //wyznaczanie nazwy
         String name = samplesContainer.getNextName(character);

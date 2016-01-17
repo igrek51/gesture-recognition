@@ -137,7 +137,7 @@ public class Graphics extends CanvasView {
         for (int i = 4 - 1; i >= 0; i--) {
             if (engine.gestureManager.getLastInputGesture(i) != null) {
                 Track track = engine.gestureManager.getLastInputGesture(i).getTrack();
-                drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 1 / 4);
+                drawTrack(track, 0.25f, w - (i+1) * w / 4, h * 3 / 4);
             }
         }
     }
@@ -147,7 +147,7 @@ public class Graphics extends CanvasView {
             float[] histogram = engine.gestureManager.getLastInputGesture().getSingleGesture().getHistogram();
             float[] normalized = FreemanHistogram.getNewNormalized(histogram);
             if (normalized != null) {
-                float y_offset = h*3/4;
+                float y_offset = h*2/4;
                 float hr2 = h * Config.Gestures.histogram_plot_height / 2;
                 //układ współrzędnych
                 setColor(Config.Colors.histogram_axis);

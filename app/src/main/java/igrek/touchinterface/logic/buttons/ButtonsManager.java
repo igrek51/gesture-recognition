@@ -12,8 +12,8 @@ public class ButtonsManager extends BaseButtonsManager {
 
     public enum ButtonId {
         CLEAR_CONSOLE, EXIT,
-        SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE, DELETE_SAMPLE,
-        RECOGNIZE_RESET,
+        SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE,
+        DELETE_SAMPLE, CLEAR_SAMPLES,
         MENU, WRITING,
         BACKSPACE, CORRECT_SAMPLE
     }
@@ -60,9 +60,9 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.deleteSample();
             }
         });
-        add("Reset input", ButtonId.RECOGNIZE_RESET, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
+        add("Wyczyść wzorce", ButtonId.CLEAR_SAMPLES, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
             public void clicked() throws Exception {
-                engine.gestureManager.resetInputs();
+                engine.gestureManager.clearSamples();
             }
         });
         add("Cofnij", ButtonId.MENU, new RelativeGeometry(0, gesture_manager.bottomRelative(), 0.5f, 0), new ButtonActionListener() {
@@ -88,7 +88,7 @@ public class ButtonsManager extends BaseButtonsManager {
             if(bid == ButtonId.SAVE_SAMPLE) return true;
             if(bid == ButtonId.LIST_SAMPLES) return true;
             if(bid == ButtonId.DELETE_SAMPLE) return true;
-            if(bid == ButtonId.RECOGNIZE_RESET) return true;
+            if(bid == ButtonId.CLEAR_SAMPLES) return true;
             if(bid == ButtonId.WRITING) return true;
         }else if (app.mode == Types.AppMode.WRITING) {
             if(bid == ButtonId.EXIT) return true;
