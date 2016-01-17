@@ -72,8 +72,6 @@ public class GestureRecognizer {
                 if (level >= unrecognizedGestures.size()) {
                     //koniec rozpoznawania, brak wyniku, czekanie na większą liczbę gestów
                     if (wait) {
-                        //Output.info("Czekam na kolejne gesty, aby ukończyć analizę:");
-                        //track.list();
                         throw new InsufficientGesturesException();
                     } else { //brak czekania - odrzucenie gestu w przypadku braku dalszych gestów
                         break;
