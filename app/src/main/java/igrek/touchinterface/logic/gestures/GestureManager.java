@@ -279,4 +279,12 @@ public class GestureManager {
         //poprawienie ostatnio rozpoznanego wzorca
         app.engine.addCorrectedGesture();
     }
+
+    public String getRecognizedString(){
+        StringBuilder sb = new StringBuilder();
+        for(RecognizedGesture recognizedOne : recognized){
+            sb.append(recognizedOne.getCharacter());
+        }
+        return sb.toString();
+    }
 }

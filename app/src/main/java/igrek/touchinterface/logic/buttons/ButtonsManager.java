@@ -15,7 +15,8 @@ public class ButtonsManager extends BaseButtonsManager {
         SAMPLES_PATH, LIST_SAMPLES, SAVE_SAMPLE,
         DELETE_SAMPLE, CLEAR_SAMPLES,
         MENU, WRITING,
-        BACKSPACE, CORRECT_SAMPLE
+        BACKSPACE, CORRECT_SAMPLE,
+        COPY_TO_CLIPBOARD, CLEAR_TEXT
     }
 
     public void initButtons(){
@@ -75,6 +76,17 @@ public class ButtonsManager extends BaseButtonsManager {
                 engine.gestureManager.correctSample();
             }
         });
+        add("Kopiuj do schowka", ButtonId.COPY_TO_CLIPBOARD, new RelativeGeometry(0, last().bottomRelative(), 0.5f, 0), new ButtonActionListener() {
+            public void clicked() throws Exception {
+                engine.copyToClipBoard();
+            }
+        });
+        add("Wyczyść tekst", ButtonId.CLEAR_TEXT, new RelativeGeometry(last().rightRelative(), last().topRelative(), 0.5f, 0), new ButtonActionListener() {
+            public void clicked() throws Exception {
+                engine.clearRecognizedText();
+            }
+        });
+
 
     }
 
@@ -97,6 +109,8 @@ public class ButtonsManager extends BaseButtonsManager {
             if(bid == ButtonId.MENU) return true;
             if(bid == ButtonId.BACKSPACE) return true;
             if(bid == ButtonId.CORRECT_SAMPLE) return true;
+            if(bid == ButtonId.COPY_TO_CLIPBOARD) return true;
+            if(bid == ButtonId.CLEAR_TEXT) return true;
         }
         return false;
     }

@@ -1,5 +1,8 @@
 package igrek.touchinterface.logic.engine;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.support.v7.app.AppCompatActivity;
 
 import java.util.ArrayList;
@@ -207,6 +210,20 @@ public class Engine extends BaseEngine {
                 }
             }
         });
+    }
+
+    public void copyToClipBoard(){
+        ClipboardManager clipboard = (ClipboardManager) activity.getSystemService(Activity.CLIPBOARD_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            ClipData clip = ClipData.newPlainText("Copied Text", gestureManager.getRecognizedString());
+            clipboard.setPrimaryClip(clip);
+            Output.info("Skopiowano tekst do schowka.");
+        }
+    }
+
+    public void clearRecognizedText(){
+        gestureManager.resetInputs();
+        gestureManager.recognized.clear();
     }
 
 }
