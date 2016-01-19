@@ -13,6 +13,7 @@ import igrek.touchinterface.logic.Types;
 import igrek.touchinterface.logic.gestures.recognition.RecognizedGesture;
 import igrek.touchinterface.logic.gestures.samples.ComplexGesture;
 import igrek.touchinterface.logic.gestures.single.SingleGesture;
+import igrek.touchinterface.logic.stats.Statistics;
 import igrek.touchinterface.system.keyinput.InputHandlerCancellable;
 import igrek.touchinterface.system.output.Output;
 import igrek.touchinterface.system.output.SoftErrorException;
@@ -21,6 +22,7 @@ import igrek.touchinterface.settings.Config;
 //TODO: statystyki: procent dobrze rozpoznanych, ilość odrzuceń na podstawie punktu startu, długości, współczynnika korelacji złożonego gestu, korelacja dla odrzucanych i dla nieodrzucanych, modyfikacja współczynników na podstawie statystyki - inteligencja
 
 public class Engine extends BaseEngine {
+    public Statistics stats = new Statistics();
 
     public Engine(AppCompatActivity activity) {
         super(activity);

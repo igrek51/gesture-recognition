@@ -41,8 +41,8 @@ public class Config {
         public static int background = 0x000000;
         public static int echo_text = 0xff008000;
         public static int signature = 0x003000;
-        public static final int track = 0x000000;
-        public static final int minitracks = 0x707070;
+        public static int track = 0xffffff;
+        public static int minitracks = 0x909090;
         public static final int histogram_axis = 0x000000;
         public static final int histogram_axis_aux = 0xa0a0a0;
         public static final int histogram_bin = 0x00a0a0;
@@ -83,15 +83,19 @@ public class Config {
             public static final double single_gesture_min_correlation = 0.85; //minimalny współczynnik korelacji dla pojedynczego gestu
         }
         public static class Collector {
-            public static final int max_samples_count = 30; //maksymalna liczba wzorców dla jednego znaku
+            public static final int max_samples_count = 35; //maksymalna liczba wzorców dla jednego znaku
             public static final double complex_gesture_max_correlation_to_collect = 0.96; //maksymalny współczynnik korelacji dla rozpoznanego złożonego gestu, który zostaje dodany do bazy jako nowy wzorzec
             public static final int max_ballance_to_remove = -3; //bilans rozpoznań, przy którym wzorzec zostaje usuwany
         }
     }
+    //  Statystyki
+    public static class Stats {
+        public static final int max_stat_samples = 50;
+    }
     //  USTAWIENIA UŻYTKOWNIKA
     public static final String shared_preferences_name = "userpreferences";
     //Zestaw ustawień: 0 - samsung galaxy grand prime (DEFAULT), 1 - emulator Android
-    public static final int config_set = 1;
+    public static final int config_set = 0;
     //nadpisanie parametrów dla innego zestawu
     public Config() {
         if (config_set == 1) {
@@ -104,6 +108,8 @@ public class Config {
             Colors.background = 0xffffff;
             Colors.echo_text = 0xa000a000;
             Colors.signature = 0xfefefe;
+            Colors.track = 0x000000;
+            Colors.minitracks = 0x707070;
         }
     }
 }

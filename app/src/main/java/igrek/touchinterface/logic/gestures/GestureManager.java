@@ -94,6 +94,7 @@ public class GestureManager {
         for (ComplexGesture sample : samplesContainer.getSamples()) {
             Output.info("Znak: " + sample.getCharacter() + ", Nazwa: " + sample.getName() + ", Złożoność: " + sample.size());
         }
+        app.engine.stats.listCharacterSamplesCount();
     }
 
     public void removeSample(ComplexGesture g) throws SoftErrorException {
@@ -212,6 +213,7 @@ public class GestureManager {
         RecognizedGesture recognizedGesture = new RecognizedGesture(singleGestures, result);
         //zwiększenie liczby poprawnych rozpoznań dla gestu
         result.addGoodRecognition();
+        app.engine.stats.addGoodRecognition();
         //jeśli gest został rozpoznany słabo
         if(recognizer.getBestCorrelation() <= Config.Gestures.Collector.complex_gesture_max_correlation_to_collect){
             //dodanie gestu do bazy jako nowy wzorzec
@@ -256,6 +258,7 @@ public class GestureManager {
         }
         //obsłużenie usunięcia gestu - zapisanie złego rozpoznania
         removed.getSample().addBadRecognition();
+        app.engine.stats.addBadRecognition();
         //usuwanie wzorca ze złym bilansem
         if(removed.getSample().getBalanceRecognitions() <= Config.Gestures.Collector.max_ballance_to_remove) {
             try{
