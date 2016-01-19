@@ -77,9 +77,9 @@ public class Config {
             public static final double correlation_length_rd1 = 0.5; //maksymalna względna różnica długości gestów niewpływająca na współczynnik korelacji
             public static final double correlation_length_rd2 = 2.5; //minimalna względna różnica długości gestów powyżej której współczynnik korelacji = 0
             //Wagi przy liczeniu średniej ważonej korelacji
-            public static final double correlation_hist_weight = 1;
-            public static final double correlation_start_point_weight = 0.25;
-            public static final double correlation_length_weight = 0.25;
+            public static final double correlation_hist_weight = 0.668;
+            public static final double correlation_start_point_weight = 0.166;
+            public static final double correlation_length_weight = 0.166;
             public static final double single_gesture_min_correlation = 0.85; //minimalny współczynnik korelacji dla pojedynczego gestu
         }
         public static class Collector {
