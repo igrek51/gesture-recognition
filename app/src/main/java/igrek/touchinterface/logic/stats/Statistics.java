@@ -28,7 +28,7 @@ public class Statistics {
         while (recognitions.size() > Config.Stats.max_stat_samples) {
             recognitions.remove(0);
         }
-        getRecognitionStats();
+        //getRecognitionStats();
     }
 
     public void addGoodRecognition(){

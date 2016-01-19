@@ -94,7 +94,7 @@ public class GestureManager {
         for (ComplexGesture sample : samplesContainer.getSamples()) {
             Output.info("Znak: " + sample.getCharacter() + ", Nazwa: " + sample.getName() + ", Złożoność: " + sample.size());
         }
-        app.engine.stats.listCharacterSamplesCount();
+        //app.engine.stats.listCharacterSamplesCount();
     }
 
     public void removeSample(ComplexGesture g) throws SoftErrorException {
@@ -113,7 +113,7 @@ public class GestureManager {
         removeSample(sample);
     }
 
-    public void clearSamples(){
+    public void clearSamples() {
         samplesContainer.getSamples().clear();
         Output.info("Usunięto wszystkie wzorce.");
     }
@@ -175,12 +175,13 @@ public class GestureManager {
 
 
     public void inputAndTryToRecognize(boolean wait) {
+        long startTime = System.currentTimeMillis();
         addCurrentGestureToHistory();
         boolean repeat;
         do {
             List<InputGesture> unrecognized = getLastUnrecognizedInputs();
             if (unrecognized.isEmpty()) {
-                return;
+                break;
             }
             GestureRecognizer recognizer = new GestureRecognizer(samplesContainer.getSamples());
             try {
@@ -203,6 +204,7 @@ public class GestureManager {
                 }
             }
         } while (repeat);
+        Output.log("Czas wykonania analizy: " + (System.currentTimeMillis() - startTime)+ " ms");
     }
 
     public void onCorrectRecognition(ComplexGesture result, List<InputGesture> unrecognized, GestureRecognizer recognizer) {
@@ -215,7 +217,7 @@ public class GestureManager {
         result.addGoodRecognition();
         app.engine.stats.addGoodRecognition();
         //jeśli gest został rozpoznany słabo
-        if(recognizer.getBestCorrelation() <= Config.Gestures.Collector.complex_gesture_max_correlation_to_collect){
+        if (recognizer.getBestCorrelation() <= Config.Gestures.Collector.complex_gesture_max_correlation_to_collect) {
             //dodanie gestu do bazy jako nowy wzorzec
             try {
                 ComplexGesture newSample = new ComplexGesture();
@@ -246,13 +248,13 @@ public class GestureManager {
         RecognizedGesture removed = recognized.get(recognized.size() - 1);
         recognized.remove(recognized.size() - 1);
         //jeśli gest został dodany automatycznie
-        if(removed.isAddedAutomatically()){
+        if (removed.isAddedAutomatically()) {
             //natychamiastowe usunięcie nowo zapisanego gestu
-            try{
+            try {
                 ComplexGesture addedAutomatically = removed.getAddedAutomaticallySample();
-                Output.info("Usuwanie wzorca dodanego automatycznie: "+addedAutomatically.getName());
+                Output.info("Usuwanie wzorca dodanego automatycznie: " + addedAutomatically.getName());
                 removeSample(addedAutomatically);
-            }catch(SoftErrorException e){
+            } catch (SoftErrorException e) {
                 Output.error(e);
             }
         }
@@ -260,11 +262,11 @@ public class GestureManager {
         removed.getSample().addBadRecognition();
         app.engine.stats.addBadRecognition();
         //usuwanie wzorca ze złym bilansem
-        if(removed.getSample().getBalanceRecognitions() <= Config.Gestures.Collector.max_ballance_to_remove) {
-            try{
-                Output.info("Usuwanie wzorca z powodu niskiego bilansu rozpoznań: "+removed.getCharacter());
+        if (removed.getSample().getBalanceRecognitions() <= Config.Gestures.Collector.max_ballance_to_remove) {
+            try {
+                Output.info("Usuwanie wzorca z powodu niskiego bilansu rozpoznań: " + removed.getCharacter());
                 removeSample(removed.getSample());
-            }catch(SoftErrorException e){
+            } catch (SoftErrorException e) {
                 Output.error(e);
             }
         }
@@ -278,14 +280,14 @@ public class GestureManager {
         addPointToCurrentTrack(touch_x, touch_y);
     }
 
-    public void correctSample(){
+    public void correctSample() {
         //poprawienie ostatnio rozpoznanego wzorca
         app.engine.addCorrectedGesture();
     }
 
-    public String getRecognizedString(){
+    public String getRecognizedString() {
         StringBuilder sb = new StringBuilder();
-        for(RecognizedGesture recognizedOne : recognized){
+        for (RecognizedGesture recognizedOne : recognized) {
             sb.append(recognizedOne.getCharacter());
         }
         return sb.toString();
